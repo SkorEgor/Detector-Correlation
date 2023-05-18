@@ -1,0 +1,28 @@
+<RCC>
+  <qresource prefix="checkbox_status_success">
+    <file>resource/checkbox_status_success/check_error_red_24dp.svg</file>
+    <file>resource/checkbox_status_success/check_ok_grean_24dp.svg</file>
+  </qresource>
+  <qresource prefix="shared">
+    <file>resource/file_download_white_24dp.svg</file>
+  </qresource>
+  <qresource prefix="table">
+    <file>resource/table/save_white_36dp.svg</file>
+    <file>resource/table/table_rows_white_36dp.svg</file>
+  </qresource>
+  <qresource prefix="menu_titles">
+    <file>resource/menu_titles/menu_correlation_white_36dp.svg</file>
+    <file>resource/menu_titles/done_white_36dp.svg</file>
+    <file>resource/menu_titles/menu_minus_white_36dp.svg</file>
+    <file>resource/menu_titles/menu_data_white_36dp.svg</file>
+  </qresource>
+  <qresource prefix="application picture">
+    <file>resource/application picture/app_icon.png</file>
+    <file>resource/application picture/app_icon-round.png</file>
+  </qresource>
+  <qresource prefix="table_checkbox">
+    <file>resource/table_checkbox/var2_color/mixed_white_24dp.svg</file>
+    <file>resource/table_checkbox/var2_color/no_red_24dp.svg</file>
+    <file>resource/table_checkbox/var2_color/yes_green_24dp.svg</file>
+  </qresource>
+</RCC>
