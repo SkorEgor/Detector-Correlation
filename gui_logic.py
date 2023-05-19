@@ -77,49 +77,78 @@ def parser(string_list, start_frequency=None, end_frequency=None):
 
 # ФУНКЦИИ ПРОВЕРКИ ВВЕДЕННЫХ ДАННЫХ
 # Дробное, больше нуля (для частоты)
-def check_float_and_positive(val, field_name):
+def check_float_and_positive(val, field_name, message=False):
     try:
         val = float(val)
 
     except ValueError:
-        QMessageBox.warning(None, "Ошибка ввода", f'Введите число в поле "{field_name!r}".')
+        if message:
+            QMessageBox.warning(None, "Ошибка ввода", f'Введите число в поле "{field_name!r}".')
         return False
 
     # Проверка положительности
     if val < 0:
-        QMessageBox.warning(None, "Ошибка ввода", f'Введите положительное число в поле "{field_name!r}".')
+        if message:
+            QMessageBox.warning(None, "Ошибка ввода", f'Введите положительное число в поле "{field_name!r}".')
         return False
 
     return True
 
+
 # Целое, больше нуля (для окна корреляции)
-def check_int_and_positive(val, field_name):
+def check_int_and_positive(val, field_name, message=False):
+    print(val, field_name, message)
     try:
         val = int(val)
 
     except ValueError:
-        QMessageBox.warning(None, "Ошибка ввода", f'Введите число в поле "{field_name!r}".')
+        if message:
+
+            QMessageBox.warning(None, "Ошибка ввода", f'Введите целое число в поле "{field_name!r}".')
         return False
 
     # Проверка положительности
     if val < 0:
-        QMessageBox.warning(None, "Ошибка ввода", f'Введите положительное число в поле "{field_name!r}".')
+        if message:
+            QMessageBox.warning(None, "Ошибка ввода", f'Введите положительное число в поле "{field_name!r}".')
         return False
 
     return True
 
+
 # Дробное, от 0 до 100 (для процентов и ширины окна просмотра)
-def check_float_and_0to100(val, field_name):
+def check_float_and_0to100(val, field_name, message=False):
     try:
         val = float(val)
 
     except ValueError:
-        QMessageBox.warning(None, "Ошибка ввода", f'Введите число в поле "{field_name!r}".')
+        if message:
+            QMessageBox.warning(None, "Ошибка ввода", f'Введите число в поле "{field_name!r}".')
         return False
 
     # Проверка на диапазон
     if val < 0 or 100 < val:
-        QMessageBox.warning(None, "Ошибка ввода", f'Введите число от 0 до 100 в поле "{field_name!r}".')
+        if message:
+            QMessageBox.warning(None, "Ошибка ввода", f'Введите число от 0 до 100 в поле "{field_name!r}".')
+        return False
+
+    return True
+
+
+# Дробное, от -100 до 100 (для процентов и ширины окна просмотра)
+def check_float_and_100to100(val, field_name, message=False):
+    try:
+        val = float(val)
+
+    except ValueError:
+        if message:
+            QMessageBox.warning(None, "Ошибка ввода", f'Введите число в поле "{field_name!r}".')
+        return False
+
+    # Проверка на диапазон
+    if val < -100 or 100 < val:
+        if message:
+            QMessageBox.warning(None, "Ошибка ввода", f'Введите число от -100 до 100 в поле "{field_name!r}".')
         return False
 
     return True
@@ -208,11 +237,14 @@ class GuiProgram(Ui_Dialog):
         self.pushButton_reading_file_with_gas.clicked.connect(self.signal_plotting)  # Загрузить данные с газом
         self.pushButton_menu_calculate.clicked.connect(self.processing)  # Обработка сигнала
 
-        # Диапазон частот обновился
+        # Режим диапазона частот обновился
         self.radioButton_all_range.clicked.connect(self.updating_frequency_range)
         self.radioButton_selected_range.clicked.connect(self.updating_frequency_range)
+        # Изменение данных корреляции - Проверка ввода
+        self.lineEdit_correlation.textEdited.connect(lambda: self.check_correlation_width(False))
+        self.lineEdit_threshold_correlation.textEdited.connect(lambda: self.check_threshold_correlation(False))
         # Проверка ввода порога
-        self.lineEdit_threshold.textEdited.connect(self.check_threshold)
+        self.lineEdit_threshold.textEdited.connect(lambda: self.check_threshold(False))
 
         # Таблица
         self.initialize_table()  # Инициализация пустой таблицы с заголовками
@@ -300,10 +332,11 @@ class GuiProgram(Ui_Dialog):
         return False
 
     # Ширина корреляции
-    def check_correlation_width(self):
+    def check_correlation_width(self, message=False):
+        print(message)
         # Запрос ширины корреляции
         val = self.lineEdit_correlation.text()
-        if check_int_and_positive(val, "Ширина окна корреляция"):
+        if check_int_and_positive(val, "Ширина окна корреляция", message):
             # Статус - Ок
             self.checkBox_status_correlation.setCheckState(Qt.Checked)
             return True
@@ -312,11 +345,24 @@ class GuiProgram(Ui_Dialog):
         self.checkBox_status_correlation.setCheckState(Qt.Unchecked)
         return False
 
+    # Порог корреляции
+    def check_threshold_correlation(self, message=False):
+        # Запрос порогового значения
+        val = self.lineEdit_threshold_correlation.text()
+        if check_float_and_100to100(val, "Пороговое значение", message):
+            # Статус - Ок
+            self.checkBox_status_threshold_correlation.setCheckState(Qt.Checked)
+            return True
+
+        # Статус - ошибка
+        self.checkBox_status_threshold_correlation.setCheckState(Qt.Unchecked)
+        return False
+
     # Порог
-    def check_threshold(self):
+    def check_threshold(self, message=False):
         # Запрос порогового значения
         threshold = self.lineEdit_threshold.text()
-        if check_float_and_0to100(threshold, "Пороговое значение"):
+        if check_float_and_0to100(threshold, "Пороговое значение", message):
             # Статус - Ок
             self.checkBox_status_threshold.setCheckState(Qt.Checked)
             return True
@@ -339,11 +385,12 @@ class GuiProgram(Ui_Dialog):
         return False
 
     # Корректность всех данных обработки
-    def checking_all_processing_parameters(self):
+    def checking_all_processing_parameters(self, message=False):
         return (self.check_data_without_gas() and
                 self.check_data_with_gas() and
-                self.check_threshold() and
-                self.check_correlation_width())
+                self.check_threshold(message) and
+                self.check_correlation_width(message) and
+                self.check_threshold_correlation(message))
 
     # ОСНОВНАЯ ПРОГРАММА
     # Основная программа - (1) Чтение и построение сигнала без шума
@@ -465,7 +512,7 @@ class GuiProgram(Ui_Dialog):
     # Основная программа - (3) Расчет разницы, порога, интервалов, частот поглощения, отображение на графиках
     def processing(self):
         # Данные не корректны, сброс
-        if not self.checking_all_processing_parameters():
+        if not self.checking_all_processing_parameters(True):
             return
 
         # Запрос окна корреляции значения
@@ -473,7 +520,10 @@ class GuiProgram(Ui_Dialog):
         # Вызов расчета корреляции
         self.data_signals.correlate(correlation_window_width)
 
-        self.updating_correlation_graph()
+        correlation_threshold = float(self.lineEdit_threshold_correlation.text()) / 100
+        correlation_threshold_signal = [correlation_threshold] * self.data_signals.data_correlate.size
+        self.updating_correlation_graph(correlation_threshold_signal)
+
         # # Запрос порогового значения
         # threshold = float(self.lineEdit_threshold.text())
         #
@@ -691,7 +741,7 @@ class GuiProgram(Ui_Dialog):
             self.ax1.plot(
                 self.data_signals.data_with_gas.index,
                 self.data_signals.data_with_gas.values,
-                color= self.color_with_gas, label=self.name_with_gas)
+                color=self.color_with_gas, label=self.name_with_gas)
         # Выделение промежутков
         if list_absorbing:
 
@@ -716,7 +766,7 @@ class GuiProgram(Ui_Dialog):
         # Данных нет - сброс
         if self.data_signals.data_correlate.empty and not threshold:
             return
-        print("oo")
+
         # Отрисовка
         self.toolbar2.home()  # Возвращаем зум
         self.toolbar2.update()  # Очищаем стек осей (от старых x, y lim)
@@ -735,7 +785,7 @@ class GuiProgram(Ui_Dialog):
         # Если есть порог, строим график
         if threshold:
             self.ax2.plot(
-                self.data_signals.name_correlation.index,
+                self.data_signals.data_correlate.index,
                 threshold,
                 color=self.color_threshold, label=self.list_threshold)
         # Рисуем сетку

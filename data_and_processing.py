@@ -1,5 +1,5 @@
 import pandas as pd
-
+from scipy import ndimage
 
 # Поиск значений поглощения на интервале
 def search_for_peak_on_interval(frequency_list, gamma_list):
@@ -25,8 +25,20 @@ class DataAndProcessing:
         # Корреляция
         self.data_correlate = pd.Series()
 
+        # Сглаженный сигнал без шума
+        self.data_smoothed_without_gas = pd.Series()
+
+        # Сигма
+        self.data_sigma = pd.Series()
+
         # Разница сигналов
         self.data_difference = pd.Series()
+
+        # Логический массив, разница данных выше сигмы
+        self.bool_difference = pd.Series()
+
+        # Логический массив, после обработки на ширину
+        self.bool_result = pd.Series()
 
         # Список диапазонов пиков
         self.absorption_line_range = pd.Series()
@@ -36,7 +48,7 @@ class DataAndProcessing:
         self.gamma_peak = []
         self.frequency_peak = []
 
-    # Считаем корреляцию между данными
+    # ОБРАБОТКА (1): Считаем корреляцию между данными
     def correlate(self, window_width):
         # Нет данных - сброс
         if self.data_without_gas.empty or self.data_with_gas.empty:
@@ -53,11 +65,57 @@ class DataAndProcessing:
             .corr(self.data_with_gas) \
             .shift(periods=-half_width)
 
+    # ОБРАБОТКА (2): Шум
+    # (2.1): Сглаживание данных без вещества
+    def smoothing_data_without_gas(self, window_width):
+        # Если четное, доводим до не четного
+        if window_width % 2 == 0:
+            window_width += 1
 
-    # Считаем разницу пустого и полезного сигнала
+        # Значение половины ширины окна
+        half_width = window_width // 2
+
+        # Проходим окном со средним сдвигая данные на половину ширины окна
+        # Так как среднее записывается в конец окна, а не в середину
+        self.data_smoothed_without_gas = self.data_without_gas.rolling(window_width).mean().shift(periods=-half_width)
+
+    # (2.2): Среднеквадратичное отклонение данных без газа со сглаживанием и без, в окне
+    def sigma_finding(self, window_width):
+        # Если четное, доводим до не четного
+        if window_width % 2 == 0:
+            window_width += 1
+
+        # Значение половины ширины окна
+        half_width = window_width // 2
+
+        # Находим разницу сглаженного и исходного сигнала без газа; Считаем среднеквадратичное отклонение
+        self.data_sigma = (self.data_smoothed_without_gas - self.data_without_gas)\
+            .rolling(window_width).std().shift(periods=-half_width)
+
+    # (2.3) Разница данных с газом и без (положительная часть)
     def difference_empty_and_signal(self):
-        # Вычитаем отсчеты сигнала с ошибкой и без
-        return (self.data_with_gas - self.data_without_gas).clip(lower=0)
+        self.data_difference = (self.data_with_gas - self.data_without_gas).clip(lower=0)
+
+    # (2.4) Сравнение сигмы с разницей данных
+    def remove_below_sigma(self, sigma_multiplier):
+        # Домножаем сигму на множитель
+        sigma_with_multiplier = self.data_sigma * sigma_multiplier
+
+        # Логический массив, разница данных выше сигмы
+        self.bool_difference = self.data_difference > sigma_with_multiplier
+
+    # ОБРАБОТКА (3): Ширина участка
+    def width_filter(self, erosion=1, dilation=8):
+        # Для результата, задаем начальное значение
+        self.bool_result = self.bool_difference
+        # Сворачиваем
+        for i in range(erosion):
+            self.bool_result = ndimage.binary_erosion(self.bool_result)
+        # Расширяем
+        for i in range(dilation):
+            self.bool_result = ndimage.binary_dilation(self.bool_result)
+
+    # ОБРАБОТКА (*): поиск индекс-значение линий поглощения, в данных выше порога
 
     # Находит интервалы индексов, значения которых выше порога
     def calculation_frequency_indexes_above_threshold(self, threshold_value):
