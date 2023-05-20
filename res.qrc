@@ -11,6 +11,7 @@
     <file>resource/table/table_rows_white_36dp.svg</file>
   </qresource>
   <qresource prefix="menu_titles">
+    <file>resource/menu_titles/menu_noise_white_36dp.svg</file>
     <file>resource/menu_titles/menu_correlation_white_36dp.svg</file>
     <file>resource/menu_titles/done_white_36dp.svg</file>
     <file>resource/menu_titles/menu_minus_white_36dp.svg</file>
@@ -24,5 +25,9 @@
     <file>resource/table_checkbox/var2_color/mixed_white_24dp.svg</file>
     <file>resource/table_checkbox/var2_color/no_red_24dp.svg</file>
     <file>resource/table_checkbox/var2_color/yes_green_24dp.svg</file>
+  </qresource>
+  <qresource prefix="update">
+    <file>resource/update/update1_white_18dp.svg</file>
+    <file>resource/update/update2_white_18dp.svg</file>
   </qresource>
 </RCC>

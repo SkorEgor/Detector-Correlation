@@ -1,6 +1,7 @@
 import pandas as pd
 from scipy import ndimage
 
+
 # Поиск значений поглощения на интервале
 def search_for_peak_on_interval(frequency_list, gamma_list):
     index_max_gamma = 0
@@ -16,6 +17,18 @@ def search_for_peak_on_interval(frequency_list, gamma_list):
 # Методов обработки и получения данных
 class DataAndProcessing:
     def __init__(self):
+        self.data = pd.DataFrame({
+            "frequency": [],  # Без шума
+            "without_gas": [],  # Без шума
+            "with_gas": [],  # Сигнал
+            "correlate": [],  # Корреляция
+            "smoothed_without_gas": [],  # Сглаженный сигнал без шума
+            "sigma": [],  # Сигма
+            "difference": [],  # Разница сигналов
+            "bool_difference": [],  # Логический массив, разница данных выше сигмы
+            "bool_result": [],  # Логический массив, после обработки на ширину
+        })
+
         # Без шума
         self.data_without_gas = pd.Series()
 
@@ -51,19 +64,17 @@ class DataAndProcessing:
     # ОБРАБОТКА (1): Считаем корреляцию между данными
     def correlate(self, window_width):
         # Нет данных - сброс
-        if self.data_without_gas.empty or self.data_with_gas.empty:
+        if self.data["without_gas"].isnull().values.all() or self.data["with_gas"].isnull().values.all():
             return
 
         # Если четное, доводим до не четного
         if window_width % 2 == 0:
             window_width += 1
 
-        # Значение половины ширины окна
-        half_width = window_width // 2
-
-        self.data_correlate = self.data_without_gas.rolling(window_width) \
-            .corr(self.data_with_gas) \
-            .shift(periods=-half_width)
+        # Считаем корреляцию окном с корреляцией, результирующее значение в середину окна
+        self.data["correlate"] = (self.data["without_gas"])\
+            .rolling(window_width, center=True) \
+            .corr(self.data["with_gas"])
 
     # ОБРАБОТКА (2): Шум
     # (2.1): Сглаживание данных без вещества
@@ -72,12 +83,8 @@ class DataAndProcessing:
         if window_width % 2 == 0:
             window_width += 1
 
-        # Значение половины ширины окна
-        half_width = window_width // 2
-
-        # Проходим окном со средним сдвигая данные на половину ширины окна
-        # Так как среднее записывается в конец окна, а не в середину
-        self.data_smoothed_without_gas = self.data_without_gas.rolling(window_width).mean().shift(periods=-half_width)
+        # Проходим окном со средним
+        self.data["smoothed_without_gas"] = self.data["without_gas"].rolling(window_width, center=True).mean()
 
     # (2.2): Среднеквадратичное отклонение данных без газа со сглаживанием и без, в окне
     def sigma_finding(self, window_width):
@@ -89,7 +96,7 @@ class DataAndProcessing:
         half_width = window_width // 2
 
         # Находим разницу сглаженного и исходного сигнала без газа; Считаем среднеквадратичное отклонение
-        self.data_sigma = (self.data_smoothed_without_gas - self.data_without_gas)\
+        self.data_sigma = (self.data_smoothed_without_gas - self.data_without_gas) \
             .rolling(window_width).std().shift(periods=-half_width)
 
     # (2.3) Разница данных с газом и без (положительная часть)

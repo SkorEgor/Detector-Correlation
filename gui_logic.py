@@ -44,7 +44,7 @@ def parser_all_data(string_list):
         frequency_list.append(float(row[1]))
         gamma_list.append(float(row[4]))
 
-    return pd.Series(gamma_list, index=frequency_list)
+    return frequency_list, gamma_list
 
 
 # Входной список, парсит по столбцам, в заданных частотах
@@ -68,11 +68,11 @@ def parser(string_list, start_frequency=None, end_frequency=None):
         row = line.split()
 
         # Если частота в диапазоне частот берем
-        if start_frequency < float(row[1]) < end_frequency:
+        if start_frequency <= float(row[1]) <= end_frequency:
             frequency_list.append(float(row[1]))
             gamma_list.append(float(row[4]))
 
-    return pd.Series(gamma_list, index=frequency_list)
+    return frequency_list, gamma_list
 
 
 # ФУНКЦИИ ПРОВЕРКИ ВВЕДЕННЫХ ДАННЫХ
@@ -103,7 +103,6 @@ def check_int_and_positive(val, field_name, message=False):
 
     except ValueError:
         if message:
-
             QMessageBox.warning(None, "Ошибка ввода", f'Введите целое число в поле "{field_name!r}".')
         return False
 
@@ -154,11 +153,25 @@ def check_float_and_100to100(val, field_name, message=False):
     return True
 
 
+# Шаблон проверки поля
+def check(line_edit, check_function, check_box, field_name, message=False):
+    # Запрос порогового значения
+    val = line_edit.text()
+    if check_function(val, field_name, message):
+        # Статус - Ок
+        check_box.setCheckState(Qt.Checked)
+        return True
+
+    # Статус - ошибка
+    check_box.setCheckState(Qt.Unchecked)
+    return False
+
+
 # КЛАСС АЛГОРИТМА ПРИЛОЖЕНИЯ
 class GuiProgram(Ui_Dialog):
     def __init__(self, dialog):
         # ПОЛЯ КЛАССА
-        # Объект данных и обработки их
+        # Объект данных и обработки
         self.data_signals = DataAndProcessing()
 
         # Название файлов
@@ -243,8 +256,9 @@ class GuiProgram(Ui_Dialog):
         # Изменение данных корреляции - Проверка ввода
         self.lineEdit_correlation.textEdited.connect(lambda: self.check_correlation_width(False))
         self.lineEdit_threshold_correlation.textEdited.connect(lambda: self.check_threshold_correlation(False))
-        # Проверка ввода порога
-        self.lineEdit_threshold.textEdited.connect(lambda: self.check_threshold(False))
+        # Проверка ввода шума
+        self.lineEdit_smoothing.textEdited.connect(lambda: self.check_smoothing_width(False))
+        self.lineEdit_sigma_multiplier.textEdited.connect(lambda: self.check_sigma_multiplier(False))
 
         # Таблица
         self.initialize_table()  # Инициализация пустой таблицы с заголовками
@@ -300,8 +314,10 @@ class GuiProgram(Ui_Dialog):
 
         # Инициализация: Пустой верхний график
 
-    # ПРОВЕРКИ ВВОДА
-    # Данные без вещества
+    ######################################
+    #           ПРОВЕРКИ ВВОДА
+    # (1) ДАННЫЕ
+    # Без вещества
     def check_data_without_gas(self):
         # Если есть список строк из файла, возвращаем True
         if self.lines_file_without_gas:
@@ -316,7 +332,7 @@ class GuiProgram(Ui_Dialog):
         QMessageBox.warning(None, "Ошибка входных данных", 'Загрузите файл данных "Без исследуемого вещества"')
         return False
 
-    # Данные с веществом
+    # С веществом
     def check_data_with_gas(self):
         # Если есть список строк из файла, возвращаем True
         if self.lines_file_with_gas:
@@ -331,70 +347,78 @@ class GuiProgram(Ui_Dialog):
         QMessageBox.warning(None, "Ошибка входных данных", 'Загрузите файл данных "C исследуемым веществом"')
         return False
 
-    # Ширина корреляции
+    # (2) Корреляция
+    # Ширина
     def check_correlation_width(self, message=False):
-        print(message)
-        # Запрос ширины корреляции
-        val = self.lineEdit_correlation.text()
-        if check_int_and_positive(val, "Ширина окна корреляция", message):
-            # Статус - Ок
-            self.checkBox_status_correlation.setCheckState(Qt.Checked)
-            return True
-
-        # Статус - ошибка
-        self.checkBox_status_correlation.setCheckState(Qt.Unchecked)
-        return False
-
-    # Порог корреляции
-    def check_threshold_correlation(self, message=False):
-        # Запрос порогового значения
-        val = self.lineEdit_threshold_correlation.text()
-        if check_float_and_100to100(val, "Пороговое значение", message):
-            # Статус - Ок
-            self.checkBox_status_threshold_correlation.setCheckState(Qt.Checked)
-            return True
-
-        # Статус - ошибка
-        self.checkBox_status_threshold_correlation.setCheckState(Qt.Unchecked)
-        return False
+        return check(
+            line_edit=self.lineEdit_correlation,
+            check_function=check_int_and_positive,
+            check_box=self.checkBox_status_correlation,
+            field_name="Ширина окна корреляция",
+            message=message
+        )
 
     # Порог
-    def check_threshold(self, message=False):
-        # Запрос порогового значения
-        threshold = self.lineEdit_threshold.text()
-        if check_float_and_0to100(threshold, "Пороговое значение", message):
-            # Статус - Ок
-            self.checkBox_status_threshold.setCheckState(Qt.Checked)
-            return True
+    def check_threshold_correlation(self, message=False):
+        return check(
+            line_edit=self.lineEdit_threshold_correlation,
+            check_function=check_float_and_100to100,
+            check_box=self.checkBox_status_threshold_correlation,
+            field_name="Пороговое значение",
+            message=message
+        )
 
-        # Статус - ошибка
-        self.checkBox_status_threshold.setCheckState(Qt.Unchecked)
-        return False
+    # (3) ШУМ
+    # Ширина сглаживания
+    def check_smoothing_width(self, message=False):
+        return check(
+            line_edit=self.lineEdit_smoothing,
+            check_function=check_int_and_positive,
+            check_box=self.checkBox_status_smoothing,
+            field_name="Ширина окна сглаживания",
+            message=message
+        )
+
+    # Проверка множителя сигмы
+    def check_sigma_multiplier(self, message=False):
+        return check(
+            line_edit=self.lineEdit_sigma_multiplier,
+            check_function=check_float_and_positive,
+            check_box=self.checkBox_status_sigma_multiplier,
+            field_name="Множитель сигмы",
+            message=message
+        )
 
     # Ширина окна просмотра
     def check_window_width(self):
-        # Запрашиваем из окна, значение порога
-        window_width = self.lineEdit_window_width.text()
-        if check_float_and_positive(window_width, "Ширина окна просмотра"):
-            # Статус - Ок
-            self.checkBox_status_window_width.setCheckState(Qt.Checked)
-            return True
+        return check(
+            line_edit=self.lineEdit_window_width,
+            check_function=check_float_and_positive,
+            check_box=self.checkBox_status_window_width,
+            field_name="Ширина окна просмотра",
+            message=False
+        )
 
-        # Статус - ошибка
-        self.checkBox_status_window_width.setCheckState(Qt.Unchecked)
-        return False
-
-    # Корректность всех данных обработки
+    # (*) Корректность всех данных обработки
     def checking_all_processing_parameters(self, message=False):
-        return (self.check_data_without_gas() and
+        return (
+                # (1) ДАННЫЕ
+                self.check_data_without_gas() and
                 self.check_data_with_gas() and
-                self.check_threshold(message) and
+                # (2) Корреляция
                 self.check_correlation_width(message) and
-                self.check_threshold_correlation(message))
+                self.check_threshold_correlation(message) and
+                # (3) ШУМ
+                self.check_smoothing_width(message) and
+                self.check_sigma_multiplier(message)
+                )
 
-    # ОСНОВНАЯ ПРОГРАММА
+    ######################################
+    #          ОСНОВНАЯ ПРОГРАММА
     # Основная программа - (1) Чтение и построение сигнала без шума
     def plotting_without_noise(self, skip_read=False):
+
+        # Для чтения файла (если файл тот же - пропускаем)
         if not skip_read:
             # Вызов окна выбора файла
             # filename, filetype = QFileDialog.getOpenFileName(None,
@@ -411,9 +435,11 @@ class GuiProgram(Ui_Dialog):
             with open(self.file_name_without_gas) as f:
                 self.lines_file_without_gas = f.readlines()  # Читаем по строчно, в список
 
+        # Проверяем статус чтения файла
         if not self.check_data_without_gas():
             return
 
+        # В зависимости от режима - парсим
         if self.radioButton_selected_range.isChecked():
             # Считываем "Частоту от"
             start_frequency = self.lineEdit_start_range.text()
@@ -435,21 +461,35 @@ class GuiProgram(Ui_Dialog):
             if end_frequency < start_frequency:
                 QMessageBox.warning(None, "Ошибка ввода", "Частота 'от' больше 'до', в фильтре чтения. ")
                 return
-
             # Парс данных в заданных частотах
-            self.data_signals.data_without_gas = parser(self.lines_file_without_gas, start_frequency, end_frequency)
+            frequency, gamma = parser(self.lines_file_without_gas, start_frequency, end_frequency)
         else:
             # Парс данных
-            self.data_signals.data_without_gas = parser_all_data(self.lines_file_without_gas)
+            frequency, gamma = parser_all_data(self.lines_file_without_gas)
+
+        ####################################################
+        # Нет частот -> Задаем
+        if self.data_signals.data["frequency"].empty:
+            self.data_signals.data["frequency"] = pd.Series(frequency)
+        # Есть частоты -> Совпадют (загружаем гамму) или разные (чистим, загружаем гамму и частоты)
+        else:
+            # Частоты начала и конца
+            data_frequency_star = self.data_signals.data["frequency"].iloc[0]
+            data_frequency_end = self.data_signals.data["frequency"].iloc[-1]
+
+            # Начало и конец не совпадает
+            if data_frequency_star != frequency[0] or data_frequency_end != frequency[-1]:
+                # Чистим данные
+                self.data_signals.data = self.data_signals.data.head(0)
+                # Заносим новые частоты
+                self.data_signals.data["frequency"] = pd.Series(frequency)
+
+        # Загружаем гамму
+        self.data_signals.data["without_gas"] = pd.Series(gamma)
+        ####################################################
 
         # Отрисовка
         self.updating_gas_graph()
-
-        # Запускаем сценарий: Загружен сигнал без шума
-        # self.state2_loaded_empty()
-
-        # Очищаем разницу, делая ее не актуальной
-        self.data_signals.data_difference = pd.Series()
 
     # Основная программа - (2) Чтение и построение полезного сигнала
     def signal_plotting(self, skip_read=False):
@@ -495,19 +535,34 @@ class GuiProgram(Ui_Dialog):
                 return
 
             # Парс данных в заданных частотах
-            self.data_signals.data_with_gas = parser(self.lines_file_with_gas, start_frequency, end_frequency)
+            frequency, gamma = parser(self.lines_file_with_gas, start_frequency, end_frequency)
         else:
             # Парс данных
-            self.data_signals.data_with_gas = parser_all_data(self.lines_file_with_gas)
+            frequency, gamma = parser_all_data(self.lines_file_with_gas)
+
+        ####################################################
+        # Нет частот -> Задаем
+        if self.data_signals.data["frequency"].empty:
+            self.data_signals.data["frequency"] = pd.Series(frequency)
+        # Есть частоты -> Совпадют (загружаем гамму) или разные (чистим, загружаем гамму и частоты)
+        else:
+            # Частоты начала и конца
+            data_frequency_star = self.data_signals.data["frequency"].iloc[0]
+            data_frequency_end = self.data_signals.data["frequency"].iloc[-1]
+
+            # Начало и конец не совпадает
+            if data_frequency_star != frequency[0] or data_frequency_end != frequency[-1]:
+                # Чистим данные
+                self.data_signals.data = self.data_signals.data.head(0)
+                # Заносим новые частоты
+                self.data_signals.data["frequency"] = pd.Series(frequency)
+
+        # Загружаем гамму
+        self.data_signals.data["with_gas"] = pd.Series(gamma)
+        ####################################################
 
         # Отрисовка
         self.updating_gas_graph()
-
-        # Запускаем сценарий: Все данные загружены
-        # self.state3_data_loaded()
-
-        # Очищаем разницу, делая ее не актуальной
-        self.data_signals.data_difference = pd.Series()
 
     # Основная программа - (3) Расчет разницы, порога, интервалов, частот поглощения, отображение на графиках
     def processing(self):
@@ -520,8 +575,16 @@ class GuiProgram(Ui_Dialog):
         # Вызов расчета корреляции
         self.data_signals.correlate(correlation_window_width)
 
+        # Расчет значения порога корреляции
         correlation_threshold = float(self.lineEdit_threshold_correlation.text()) / 100
-        correlation_threshold_signal = [correlation_threshold] * self.data_signals.data_correlate.size
+        # Частоты начала и конца
+        half_window_width = correlation_window_width // 2
+        data_frequency_star = self.data_signals.data["frequency"].iloc[half_window_width]
+        data_frequency_end = self.data_signals.data["frequency"].iloc[-half_window_width]
+        # Данные о линии порога
+        correlation_threshold_signal = pd.Series([correlation_threshold] * 2,
+                                                 index=[data_frequency_star, data_frequency_end])
+        # Отрисовка графика
         self.updating_correlation_graph(correlation_threshold_signal)
 
         # # Запрос порогового значения
@@ -659,8 +722,8 @@ class GuiProgram(Ui_Dialog):
 
         # Рек-мое название файла
         recommended_file_name = f'F{self.data_signals.data_without_gas.index[0]}-' \
-                                f'{self.data_signals.data_without_gas.index[-1]}' \
-                                f'_threshold-{self.lineEdit_threshold.text()}'
+                                f'{self.data_signals.data_without_gas.index[-1]}'  # \
+        # f'_threshold-{self.lineEdit_threshold.text()}'
 
         # Окно с выбором места сохранения
         file_name, file_type = QFileDialog.getSaveFileName(
@@ -718,7 +781,7 @@ class GuiProgram(Ui_Dialog):
     # График газов
     def updating_gas_graph(self, list_absorbing=None):
         # Данных нет - сброс
-        if self.data_signals.data_without_gas.empty and self.data_signals.data_with_gas.empty and list_absorbing:
+        if self.data_signals.data["without_gas"].empty and self.data_signals.data["with_gas"].empty and list_absorbing:
             return
 
         # Отрисовка
@@ -731,16 +794,16 @@ class GuiProgram(Ui_Dialog):
         self.ax1.set_ylabel(self.vertical_axis_name1)
         self.ax1.set_title(self.title1)
         # Если есть данные без газа, строим график
-        if not self.data_signals.data_without_gas.empty:
+        if not self.data_signals.data["without_gas"].empty:
             self.ax1.plot(
-                self.data_signals.data_without_gas.index,
-                self.data_signals.data_without_gas.values,
+                self.data_signals.data["frequency"],
+                self.data_signals.data["without_gas"],
                 color=self.color_without_gas, label=self.name_without_gas)
         # Если есть данные с газом, строим график
-        if not self.data_signals.data_with_gas.empty:
+        if not self.data_signals.data["with_gas"].empty:
             self.ax1.plot(
-                self.data_signals.data_with_gas.index,
-                self.data_signals.data_with_gas.values,
+                self.data_signals.data["frequency"],
+                self.data_signals.data["with_gas"],
                 color=self.color_with_gas, label=self.name_with_gas)
         # Выделение промежутков
         if list_absorbing:
@@ -764,7 +827,7 @@ class GuiProgram(Ui_Dialog):
     # График корреляции
     def updating_correlation_graph(self, threshold=None):
         # Данных нет - сброс
-        if self.data_signals.data_correlate.empty and not threshold:
+        if self.data_signals.data["correlate"].isnull().values.all() and not (threshold is None):
             return
 
         # Отрисовка
@@ -777,16 +840,16 @@ class GuiProgram(Ui_Dialog):
         self.ax2.set_ylabel(self.vertical_axis_name_correlation)
         self.ax2.set_title(self.title_correlation)
         # Если есть данные корреляции, строим график
-        if not self.data_signals.data_correlate.empty:
+        if not self.data_signals.data["correlate"].isnull().values.all():
             self.ax2.plot(
-                self.data_signals.data_correlate.index,
-                self.data_signals.data_correlate.values,
+                self.data_signals.data["frequency"],
+                self.data_signals.data["correlate"],
                 color=self.color_correlation, label=self.name_correlation)
         # Если есть порог, строим график
-        if threshold:
+        if not (threshold is None):
             self.ax2.plot(
-                self.data_signals.data_correlate.index,
-                threshold,
+                threshold.index,
+                threshold.values,
                 color=self.color_threshold, label=self.list_threshold)
         # Рисуем сетку
         self.ax2.grid()
