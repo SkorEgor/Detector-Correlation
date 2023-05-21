@@ -16,6 +16,7 @@
     <file>resource/menu_titles/done_white_36dp.svg</file>
     <file>resource/menu_titles/menu_minus_white_36dp.svg</file>
     <file>resource/menu_titles/menu_data_white_36dp.svg</file>
+    <file>resource/menu_titles/menu_width_white_36dp.svg</file>
   </qresource>
   <qresource prefix="application picture">
     <file>resource/application picture/app_icon.png</file>

@@ -75,7 +75,7 @@ class DataAndProcessing:
 
     # (*) Чистит все данные (альтернатива:  self.data = self.data.head(0))
     def clear_data(self):
-        self.data[self.names_data + self.names_processing] = np.nan
+        self.data = self.data.head(0)
 
     # ОБРАБОТКА (1): Считаем корреляцию между данными
     def correlate(self, window_width):
@@ -139,13 +139,13 @@ class DataAndProcessing:
     # ОБРАБОТКА (3): Ширина участка
     def width_filter(self, erosion=1, dilation=8):
         # Для результата, задаем начальное значение
-        self.bool_result = self.bool_difference
+        self.data["bool_result"] = self.data["bool_difference"]
         # Сворачиваем
         for i in range(erosion):
-            self.bool_result = ndimage.binary_erosion(self.bool_result)
+            self.data["bool_result"] = ndimage.binary_erosion(self.data["bool_result"])
         # Расширяем
         for i in range(dilation):
-            self.bool_result = ndimage.binary_dilation(self.bool_result)
+            self.data["bool_result"] = ndimage.binary_dilation(self.data["bool_result"])
 
     # ОБРАБОТКА (*): поиск индекс-значение линий поглощения, в данных выше порога
 
