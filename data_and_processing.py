@@ -1,3 +1,4 @@
+import numpy as np
 import pandas as pd
 from scipy import ndimage
 
@@ -17,17 +18,24 @@ def search_for_peak_on_interval(frequency_list, gamma_list):
 # Методов обработки и получения данных
 class DataAndProcessing:
     def __init__(self):
-        self.data = pd.DataFrame({
-            "frequency": [],  # Без шума
-            "without_gas": [],  # Без шума
-            "with_gas": [],  # Сигнал
-            "correlate": [],  # Корреляция
-            "smoothed_without_gas": [],  # Сглаженный сигнал без шума
-            "sigma": [],  # Сигма
-            "difference": [],  # Разница сигналов
-            "bool_difference": [],  # Логический массив, разница данных выше сигмы
-            "bool_result": [],  # Логический массив, после обработки на ширину
-        })
+        self.names_data = [
+            "frequency",  # Без шума
+            "without_gas",  # Без шума
+            "with_gas",  # Сигнал
+        ]
+        self.names_processing = [
+            "correlate",  # Корреляция
+            "smoothed_without_gas",  # Сглаженный сигнал без шума
+            "sigma",  # Сигма
+            "sigma_with_multiplier",  # Сигма с множителем
+            "difference",  # Разница сигналов
+            "bool_difference",  # Логический массив, разница данных выше сигмы
+            "bool_result",  # Логический массив, после обработки на ширину
+        ]
+        self.data = pd.DataFrame(columns=self.names_data + self.names_processing)
+
+        # Пороговое значение для корреляции
+        self.correlation_threshold = None
 
         # Без шума
         self.data_without_gas = pd.Series()
@@ -61,6 +69,14 @@ class DataAndProcessing:
         self.gamma_peak = []
         self.frequency_peak = []
 
+    # (*) Чистит данные процесса обработки
+    def clear_data_processing(self):
+        self.data[self.names_processing] = np.nan
+
+    # (*) Чистит все данные (альтернатива:  self.data = self.data.head(0))
+    def clear_data(self):
+        self.data[self.names_data + self.names_processing] = np.nan
+
     # ОБРАБОТКА (1): Считаем корреляцию между данными
     def correlate(self, window_width):
         # Нет данных - сброс
@@ -72,7 +88,7 @@ class DataAndProcessing:
             window_width += 1
 
         # Считаем корреляцию окном с корреляцией, результирующее значение в середину окна
-        self.data["correlate"] = (self.data["without_gas"])\
+        self.data["correlate"] = (self.data["without_gas"]) \
             .rolling(window_width, center=True) \
             .corr(self.data["with_gas"])
 
@@ -92,24 +108,33 @@ class DataAndProcessing:
         if window_width % 2 == 0:
             window_width += 1
 
-        # Значение половины ширины окна
-        half_width = window_width // 2
-
         # Находим разницу сглаженного и исходного сигнала без газа; Считаем среднеквадратичное отклонение
-        self.data_sigma = (self.data_smoothed_without_gas - self.data_without_gas) \
-            .rolling(window_width).std().shift(periods=-half_width)
+        self.data["sigma"] = (self.data["smoothed_without_gas"] - self.data["without_gas"]) \
+            .rolling(window_width, center=True).std()
 
     # (2.3) Разница данных с газом и без (положительная часть)
     def difference_empty_and_signal(self):
-        self.data_difference = (self.data_with_gas - self.data_without_gas).clip(lower=0)
+        self.data["difference"] = (self.data["with_gas"] - self.data["without_gas"]).clip(lower=0)
+        # Порог для корреляции задан -> Разница на участках меньше корреляции
+        if not (self.correlation_threshold is None):
+            self.data["difference"] = self.data["difference"] * (self.data["correlate"] < self.correlation_threshold)
 
-    # (2.4) Сравнение сигмы с разницей данных
+    # (2.4) Домноженная сигма
+    def multiply_sigma(self, sigma_multiplier):
+        self.data["sigma_with_multiplier"] = self.data["sigma"] * sigma_multiplier
+
+    # (2.5) Сравнение сигмы с разницей данных
     def remove_below_sigma(self, sigma_multiplier):
-        # Домножаем сигму на множитель
-        sigma_with_multiplier = self.data_sigma * sigma_multiplier
+        # Если разницы нет - считаем
+        if self.data["difference"].isnull().values.all():
+            self.difference_empty_and_signal()
+
+        # Если сигмы с множителем нет - считаем
+        if self.data["sigma_with_multiplier"].isnull().values.all():
+            self.multiply_sigma(sigma_multiplier)
 
         # Логический массив, разница данных выше сигмы
-        self.bool_difference = self.data_difference > sigma_with_multiplier
+        self.data["bool_difference"] = self.data["difference"] > self.data["sigma_with_multiplier"]
 
     # ОБРАБОТКА (3): Ширина участка
     def width_filter(self, erosion=1, dilation=8):

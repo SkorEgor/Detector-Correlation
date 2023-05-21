@@ -97,7 +97,6 @@ def check_float_and_positive(val, field_name, message=False):
 
 # Целое, больше нуля (для окна корреляции)
 def check_int_and_positive(val, field_name, message=False):
-    print(val, field_name, message)
     try:
         val = int(val)
 
@@ -167,6 +166,31 @@ def check(line_edit, check_function, check_box, field_name, message=False):
     return False
 
 
+# ШАБЛОН ОТРИСОВКИ ГРАФИКОВ
+# Очистка и подпись графика (вызывается в начале)
+def cleaning_and_chart_graph(toolbar, axis, x_label, y_label, title):
+    toolbar.home()  # Возвращаем зум
+    toolbar.update()  # Очищаем стек осей (от старых x, y lim)
+    # Очищаем график
+    axis.clear()
+    # Название осей и графика
+    axis.set_xlabel(x_label)
+    axis.set_ylabel(y_label)
+    axis.set_title(title)
+
+
+# Отрисовка (вызывается в конце)
+def draw_graph(axis, figure, canvas):
+    # Рисуем сетку
+    axis.grid()
+    # Инициирует отображение названия графика и различных надписей на нем.
+    axis.legend()
+    # Убеждаемся, что все помещается внутри холста
+    figure.tight_layout()
+    # Показываем новую фигуру в интерфейсе
+    canvas.draw()
+
+
 # КЛАСС АЛГОРИТМА ПРИЛОЖЕНИЯ
 class GuiProgram(Ui_Dialog):
     def __init__(self, dialog):
@@ -186,9 +210,17 @@ class GuiProgram(Ui_Dialog):
         self.fig1 = None
         self.canvas1 = None
         self.toolbar1 = None
-        self.title1 = "График №1. Данные с исследуемым веществом и без."
-        self.horizontal_axis_name1 = "Частота [МГц]"
-        self.vertical_axis_name1 = "Гамма"
+
+        # Параметры 2 графика
+        self.ax2 = None
+        self.fig2 = None
+        self.canvas2 = None
+        self.toolbar2 = None
+
+        # График №1 Данные
+        self.title_data = "График №1. Данные с исследуемым веществом и без."
+        self.horizontal_axis_name_data = "Частота [МГц]"
+        self.vertical_axis_name_data = "Гамма"
 
         self.name_without_gas = "Без вещества"
         self.color_without_gas = "#515151"
@@ -197,12 +229,7 @@ class GuiProgram(Ui_Dialog):
         self.list_absorbing = "Участок с линией поглощения"
         self.color_absorbing = "#36F62D"
 
-        # Параметры 2 графика
-        self.ax2 = None
-        self.fig2 = None
-        self.canvas2 = None
-        self.toolbar2 = None
-        # Для корреляции
+        # График №2 Корреляция
         self.title_correlation = "График №2. Значение окна корреляции между данными."
         self.horizontal_axis_name_correlation = "Частота [МГц]"
         self.vertical_axis_name_correlation = "Корреляция"
@@ -211,6 +238,25 @@ class GuiProgram(Ui_Dialog):
         self.color_correlation = "#310DEC"
         self.list_threshold = "Порог"
         self.color_threshold = "#EE2816"
+
+        # График №3 Сглаживание
+        self.title_smoothing = "График №3. Исходные и сглаженные данные 'без вещества'."
+        self.horizontal_axis_name_smoothing = self.horizontal_axis_name_data
+        self.vertical_axis_name_smoothing = self.vertical_axis_name_data
+
+        self.name_smoothing = "Сглаженные данные"
+        self.color_smoothing = "r"  # !!!!!!!!!!!!!!!ПОДБЕРИ ЦВЕЕЕЕЕЕТ!!!!!!!!!!!
+
+        # График №4 Сигмы и разницы
+        self.title_sigma_and_difference = "График №4. Сигма и разница между данными."
+        self.horizontal_axis_name_sigma_and_difference = self.horizontal_axis_name_data
+        self.vertical_axis_name_sigma_and_difference = self.vertical_axis_name_data
+
+        self.name_sigma = "Сигма"
+        self.color_sigma = "r"  # !!!!!!!!!!!!!!!ПОДБЕРИ ЦВЕЕЕЕЕЕТ!!!!!!!!!!!
+
+        self.name_difference = "Разница данных"
+        self.color_difference = "g"  # !!!!!!!!!!!!!!!ПОДБЕРИ ЦВЕЕЕЕЕЕТ!!!!!!!!!!!
 
         # Статистика таблицы
         self.total_rows = 0
@@ -258,6 +304,7 @@ class GuiProgram(Ui_Dialog):
         self.lineEdit_threshold_correlation.textEdited.connect(lambda: self.check_threshold_correlation(False))
         # Проверка ввода шума
         self.lineEdit_smoothing.textEdited.connect(lambda: self.check_smoothing_width(False))
+        self.lineEdit_smoothing_sigma_window_width.textEdited.connect(lambda: self.check_sigma_window_width(False))
         self.lineEdit_sigma_multiplier.textEdited.connect(lambda: self.check_sigma_multiplier(False))
 
         # Таблица
@@ -379,6 +426,16 @@ class GuiProgram(Ui_Dialog):
             message=message
         )
 
+    # Ширина сигмы
+    def check_sigma_window_width(self, message=False):
+        return check(
+            line_edit=self.lineEdit_smoothing_sigma_window_width,
+            check_function=check_int_and_positive,
+            check_box=self.checkBox_status_sigma_window_width,
+            field_name="Ширина окна сигмы",
+            message=message
+        )
+
     # Проверка множителя сигмы
     def check_sigma_multiplier(self, message=False):
         return check(
@@ -410,8 +467,9 @@ class GuiProgram(Ui_Dialog):
                 self.check_threshold_correlation(message) and
                 # (3) ШУМ
                 self.check_smoothing_width(message) and
-                self.check_sigma_multiplier(message)
-                )
+                self.check_sigma_multiplier(message) and
+                self.check_sigma_window_width(message)
+        )
 
     ######################################
     #          ОСНОВНАЯ ПРОГРАММА
@@ -480,7 +538,7 @@ class GuiProgram(Ui_Dialog):
             # Начало и конец не совпадает
             if data_frequency_star != frequency[0] or data_frequency_end != frequency[-1]:
                 # Чистим данные
-                self.data_signals.data = self.data_signals.data.head(0)
+                self.data_signals.clear_data()
                 # Заносим новые частоты
                 self.data_signals.data["frequency"] = pd.Series(frequency)
 
@@ -553,7 +611,7 @@ class GuiProgram(Ui_Dialog):
             # Начало и конец не совпадает
             if data_frequency_star != frequency[0] or data_frequency_end != frequency[-1]:
                 # Чистим данные
-                self.data_signals.data = self.data_signals.data.head(0)
+                self.data_signals.clear_data()
                 # Заносим новые частоты
                 self.data_signals.data["frequency"] = pd.Series(frequency)
 
@@ -570,6 +628,10 @@ class GuiProgram(Ui_Dialog):
         if not self.checking_all_processing_parameters(True):
             return
 
+        # Чистим от прошлых данных
+        self.data_signals.clear_data_processing()
+
+        # (1) КОРРЕЛЯЦИЯ
         # Запрос окна корреляции значения
         correlation_window_width = int(self.lineEdit_correlation.text())
         # Вызов расчета корреляции
@@ -577,6 +639,7 @@ class GuiProgram(Ui_Dialog):
 
         # Расчет значения порога корреляции
         correlation_threshold = float(self.lineEdit_threshold_correlation.text()) / 100
+        self.data_signals.correlation_threshold = correlation_threshold  # Запоминаем порог, для построения разности
         # Частоты начала и конца
         half_window_width = correlation_window_width // 2
         data_frequency_star = self.data_signals.data["frequency"].iloc[half_window_width]
@@ -585,7 +648,27 @@ class GuiProgram(Ui_Dialog):
         correlation_threshold_signal = pd.Series([correlation_threshold] * 2,
                                                  index=[data_frequency_star, data_frequency_end])
         # Отрисовка графика
-        self.updating_correlation_graph(correlation_threshold_signal)
+        # self.updating_correlation_graph(correlation_threshold_signal)
+
+        # (2.1) СГЛАЖИВАНИЕ -> СИГМА
+        # Сглаживание
+        smooth_window_width = int(self.lineEdit_smoothing.text())
+        self.data_signals.smoothing_data_without_gas(smooth_window_width)
+
+        # self.updating_smoothing_graph()
+
+        # Сигма
+        sigma_window_width = int(self.lineEdit_smoothing_sigma_window_width.text())
+        self.data_signals.sigma_finding(sigma_window_width)
+
+        # (2.2) СРАВНЕНИЕ
+        # сигмы и разницы
+        sigma_multiplier = float(self.lineEdit_sigma_multiplier.text())
+        print(sigma_multiplier)
+        self.data_signals.remove_below_sigma(sigma_multiplier)
+
+        self.updating_sigma_and_difference_graph()
+
 
         # # Запрос порогового значения
         # threshold = float(self.lineEdit_threshold.text())
@@ -784,15 +867,16 @@ class GuiProgram(Ui_Dialog):
         if self.data_signals.data["without_gas"].empty and self.data_signals.data["with_gas"].empty and list_absorbing:
             return
 
-        # Отрисовка
-        self.toolbar1.home()  # Возвращаем зум
-        self.toolbar1.update()  # Очищаем стек осей (от старых x, y lim)
-        # Очищаем график
-        self.ax1.clear()
-        # Название осей и графика
-        self.ax1.set_xlabel(self.horizontal_axis_name1)
-        self.ax1.set_ylabel(self.vertical_axis_name1)
-        self.ax1.set_title(self.title1)
+        # Очистка и подпись графика (вызывается в начале)
+        cleaning_and_chart_graph(
+            # Объекты графика
+            toolbar=self.toolbar1, axis=self.ax1,
+            # Название графика
+            title=self.title_data,
+            # Подпись осей
+            x_label=self.horizontal_axis_name_data, y_label=self.vertical_axis_name_data
+        )
+
         # Если есть данные без газа, строим график
         if not self.data_signals.data["without_gas"].empty:
             self.ax1.plot(
@@ -815,14 +899,9 @@ class GuiProgram(Ui_Dialog):
 
             for i in list_absorbing:
                 self.ax1.plot(i.index, i.values, color=self.color_absorbing)
-        # Рисуем сетку
-        self.ax1.grid()
-        # Инициирует отображение названия графика и различных надписей на нем.
-        self.ax1.legend()
-        # Убеждаемся, что все помещается внутри холста
-        self.fig1.tight_layout()
-        # Показываем новую фигуру в интерфейсе
-        self.canvas1.draw()
+
+        # Отрисовка (вызывается в конце)
+        draw_graph(axis=self.ax1, figure=self.fig1, canvas=self.canvas1)
 
     # График корреляции
     def updating_correlation_graph(self, threshold=None):
@@ -830,15 +909,16 @@ class GuiProgram(Ui_Dialog):
         if self.data_signals.data["correlate"].isnull().values.all() and not (threshold is None):
             return
 
-        # Отрисовка
-        self.toolbar2.home()  # Возвращаем зум
-        self.toolbar2.update()  # Очищаем стек осей (от старых x, y lim)
-        # Очищаем график
-        self.ax2.clear()
-        # Название осей и графика
-        self.ax2.set_xlabel(self.horizontal_axis_name_correlation)
-        self.ax2.set_ylabel(self.vertical_axis_name_correlation)
-        self.ax2.set_title(self.title_correlation)
+        # Очистка и подпись графика (вызывается в начале)
+        cleaning_and_chart_graph(
+            # Объекты графика
+            toolbar=self.toolbar2, axis=self.ax2,
+            # Название графика
+            title=self.title_correlation,
+            # Подпись осей
+            x_label=self.horizontal_axis_name_correlation, y_label=self.vertical_axis_name_correlation
+        )
+
         # Если есть данные корреляции, строим график
         if not self.data_signals.data["correlate"].isnull().values.all():
             self.ax2.plot(
@@ -851,53 +931,105 @@ class GuiProgram(Ui_Dialog):
                 threshold.index,
                 threshold.values,
                 color=self.color_threshold, label=self.list_threshold)
-        # Рисуем сетку
-        self.ax2.grid()
-        # Инициирует отображение названия графика и различных надписей на нем.
-        self.ax2.legend()
-        # Убеждаемся, что все помещается внутри холста
-        self.fig2.tight_layout()
-        # Показываем новую фигуру в интерфейсе
-        self.canvas2.draw()
-        self.toolbar2.push_current()  # Сохранить текущий статус zoom как домашний
 
-    # График отклонений
-    def updating_deviation_graph(self, threshold=None):
-        # Данных нет - сброс
-        if self.data_signals.data_difference.empty and not threshold:
+        # Отрисовка (вызывается в конце)
+        draw_graph(axis=self.ax2, figure=self.fig2, canvas=self.canvas2)
+
+    # График сглаженный
+    def updating_smoothing_graph(self):
+        # Данных нет (не_пустые.значения.во_всех_строчках) - сброс ()
+        if (self.data_signals.data["smoothed_without_gas"].isnull().values.all() and
+                self.data_signals.data["without_gas"].isnull().values.all()):
             return
 
-        # Отрисовка
-        self.toolbar2.home()  # Возвращаем зум
-        self.toolbar2.update()  # Очищаем стек осей (от старых x, y lim)
-        # Очищаем график
-        self.ax2.clear()
-        # Название осей и графика
-        self.ax2.set_xlabel(self.horizontal_axis_name2)
-        self.ax2.set_ylabel(self.vertical_axis_name2)
-        self.ax2.set_title(self.title2)
-        # Если есть данные отклонения, строим график
-        if not self.data_signals.data_difference.empty:
-            self.ax2.plot(
-                self.data_signals.data_difference.index,
-                self.data_signals.data_difference.values,
-                color=self.color_difference, label=self.name_difference)
-        # Если есть порог, строим график
-        if threshold:
-            self.ax2.plot(
-                self.data_signals.data_difference.index,
-                threshold,
-                color=self.color_threshold, label=self.list_threshold)
-        # Рисуем сетку
-        self.ax2.grid()
-        # Инициирует отображение названия графика и различных надписей на нем.
-        self.ax2.legend()
-        # Убеждаемся, что все помещается внутри холста
-        self.fig2.tight_layout()
-        # Показываем новую фигуру в интерфейсе
-        self.canvas2.draw()
-        self.toolbar2.push_current()  # Сохранить текущий статус zoom как домашний
+        # Очистка и подпись графика (вызывается в начале)
+        cleaning_and_chart_graph(
+            # Объекты графика
+            toolbar=self.toolbar2, axis=self.ax2,
+            # Название графика
+            title=self.title_smoothing,
+            # Подпись осей
+            x_label=self.horizontal_axis_name_smoothing, y_label=self.vertical_axis_name_smoothing
+        )
 
+        # График без вещества
+        self.ax2.plot(
+            self.data_signals.data["frequency"],
+            self.data_signals.data["without_gas"],
+            color=self.color_without_gas, label=self.name_without_gas)
+        # Сглаженный график без вещества
+        self.ax2.plot(
+            self.data_signals.data["frequency"],
+            self.data_signals.data["smoothed_without_gas"],
+            color=self.color_smoothing, label=self.name_smoothing)
+
+        # Отрисовка (вызывается в конце)
+        draw_graph(axis=self.ax2, figure=self.fig2, canvas=self.canvas2)
+
+    # График корреляции
+    def updating_correlation_graph(self, threshold=None):
+        # Данных нет - сброс
+        if self.data_signals.data["correlate"].isnull().values.all() and not (threshold is None):
+            return
+
+        # Очистка и подпись графика (вызывается в начале)
+        cleaning_and_chart_graph(
+            # Объекты графика
+            toolbar=self.toolbar2, axis=self.ax2,
+            # Название графика
+            title=self.title_correlation,
+            # Подпись осей
+            x_label=self.horizontal_axis_name_correlation, y_label=self.vertical_axis_name_correlation
+        )
+
+        # Если есть данные корреляции, строим график
+        if not self.data_signals.data["correlate"].isnull().values.all():
+            self.ax2.plot(
+                self.data_signals.data["frequency"],
+                self.data_signals.data["correlate"],
+                color=self.color_correlation, label=self.name_correlation)
+        # Если есть порог, строим график
+        if not (threshold is None):
+            self.ax2.plot(
+                threshold.index,
+                threshold.values,
+                color=self.color_threshold, label=self.list_threshold)
+
+        # Отрисовка (вызывается в конце)
+        draw_graph(axis=self.ax2, figure=self.fig2, canvas=self.canvas2)
+
+    # График сигмы и разницы
+    def updating_sigma_and_difference_graph(self):
+        # Данных нет (не_пустые.значения.во_всех_строчках) - сброс ()
+        if (self.data_signals.data["difference"].isnull().values.all() and
+                self.data_signals.data["sigma_with_multiplier"].isnull().values.all()):
+            return
+
+        # Очистка и подпись графика (вызывается в начале)
+        cleaning_and_chart_graph(
+            # Объекты графика
+            toolbar=self.toolbar2, axis=self.ax2,
+            # Название графика
+            title=self.title_sigma_and_difference,
+            # Подпись осей
+            x_label=self.horizontal_axis_name_sigma_and_difference, y_label=self.vertical_axis_name_sigma_and_difference
+        )
+
+        # Разница
+        self.ax2.plot(
+            self.data_signals.data["frequency"],
+            self.data_signals.data["difference"],
+            color=self.color_difference, label=self.name_difference)
+        # Сигма
+        self.ax2.plot(
+            self.data_signals.data["frequency"],
+            self.data_signals.data["sigma_with_multiplier"],
+            color=self.color_sigma, label=self.name_sigma)
+
+        # Отрисовка (вызывается в конце)
+        draw_graph(axis=self.ax2, figure=self.fig2, canvas=self.canvas2)
+
+    # ВСЯКОЕ
     # Диапазон частот
     def updating_frequency_range(self):
         # Если данных нет, сброс иначе обновляем
