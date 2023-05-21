@@ -1,6 +1,8 @@
 # coding: utf-8
 from gui import Ui_Dialog
 from data_and_processing import DataAndProcessing
+from graph import Graph
+from drawer import Drawer as drawer
 
 import functools
 
@@ -205,68 +207,6 @@ class GuiProgram(Ui_Dialog):
         self.lines_file_without_gas = None
         self.lines_file_with_gas = None
 
-        # Параметры 1 графика
-        self.ax1 = None
-        self.fig1 = None
-        self.canvas1 = None
-        self.toolbar1 = None
-
-        # Параметры 2 графика
-        self.ax2 = None
-        self.fig2 = None
-        self.canvas2 = None
-        self.toolbar2 = None
-
-        # График №1 Данные
-        self.title_data = "График №1. Данные с исследуемым веществом и без."
-        self.horizontal_axis_name_data = "Частота [МГц]"
-        self.vertical_axis_name_data = "Гамма"
-
-        self.name_without_gas = "Без вещества"
-        self.color_without_gas = "#515151"
-        self.name_with_gas = "C веществом"
-        self.color_with_gas = "#DC7C02"
-        self.list_absorbing = "Участок с линией поглощения"
-        self.color_absorbing = "#36F62D"
-
-        # График №2 Корреляция
-        self.title_correlation = "График №2. Значение окна корреляции между данными."
-        self.horizontal_axis_name_correlation = "Частота [МГц]"
-        self.vertical_axis_name_correlation = "Корреляция"
-
-        self.name_correlation = "Корреляция"
-        self.color_correlation = "#310DEC"
-        self.list_threshold = "Порог"
-        self.color_threshold = "#EE2816"
-
-        # График №3 Сглаживание
-        self.title_smoothing = "График №3. Исходные и сглаженные данные 'без вещества'."
-        self.horizontal_axis_name_smoothing = self.horizontal_axis_name_data
-        self.vertical_axis_name_smoothing = self.vertical_axis_name_data
-
-        self.name_smoothing = "Сглаженные данные"
-        self.color_smoothing = "r"  # !!!!!!!!!!!!!!!ПОДБЕРИ ЦВЕЕЕЕЕЕТ!!!!!!!!!!!
-
-        # График №4 Сигмы и разницы
-        self.title_sigma_and_difference = "График №4. Сигма и разница между данными."
-        self.horizontal_axis_name_sigma_and_difference = self.horizontal_axis_name_data
-        self.vertical_axis_name_sigma_and_difference = self.vertical_axis_name_data
-
-        self.name_sigma = "Сигма"
-        self.color_sigma = "r"  # !!!!!!!!!!!!!!!ПОДБЕРИ ЦВЕЕЕЕЕЕТ!!!!!!!!!!!
-        self.name_difference = "Разница данных"
-        self.color_difference = "g"  # !!!!!!!!!!!!!!!ПОДБЕРИ ЦВЕЕЕЕЕЕТ!!!!!!!!!!!
-
-        # График №5 Фильтрация по ширине участка
-        self.title_filter_by_area_width = "График №5. Результат фильтрации по ширине участка"
-        self.horizontal_axis_name_filter_by_area_width = self.horizontal_axis_name_data
-        self.vertical_axis_name_filter_by_area_width = ""  # !!!!!!!!!!!!!!!????????!!!!!!!!!!!
-
-        self.name_filter_beginning = "До"
-        self.color_filter_beginning = "r"  # !!!!!!!!!!!!!!!ПОДБЕРИ ЦВЕЕЕЕЕЕТ!!!!!!!!!!!
-        self.name_filter_end = "После"
-        self.color_filter_end = "g"  # !!!!!!!!!!!!!!!ПОДБЕРИ ЦВЕЕЕЕЕЕТ!!!!!!!!!!!
-
         # Статистика таблицы
         self.total_rows = 0
         self.selected_rows = 0
@@ -290,15 +230,19 @@ class GuiProgram(Ui_Dialog):
         # Устанавливаем пользовательский интерфейс
         self.setupUi(dialog)
 
-        # Инициализируем фигуру в нашем окне
-        figure1 = Figure()  # Готовим пустую фигуру
-        axis1 = figure1.add_subplot(111)  # Пустой участок
-        self.initialize_figure(figure1, axis1)  # Инициализируем!
+        # Параметры 1 графика
+        self.graph_1 = Graph(
+            layout=self.layout_plot_1,
+            widget=self.widget_plot_1
+        )
+        self.graph_1.initialize()
 
-        # Аналогично для второго графика
-        figure2 = Figure()
-        axis2 = figure2.add_subplot(111)
-        self.initialize_figure2(figure2, axis2)
+        # Параметры 2 графика
+        self.graph_2 = Graph(
+            layout=self.layout_plot_2,
+            widget=self.widget_plot_2
+        )
+        self.graph_2.initialize()
 
         # Обработчики нажатий - кнопок порядка работы
         self.pushButton_reading_file_no_gas.clicked.connect(self.plotting_without_noise)  # Загрузить данные с вакуума
@@ -328,42 +272,6 @@ class GuiProgram(Ui_Dialog):
         # Выбран заголовок таблицы
         self.tableWidget_frequency_absorption.horizontalHeader().sectionClicked.connect(self.click_handler)
 
-    # ИНИЦИАЛИЗАЦИЯ
-    # Пустой верхний график
-    def initialize_figure(self, fig, ax):
-        # Инициализирует фигуру matplotlib внутри контейнера GUI.
-        # Вызываем только один раз при инициализации
-
-        # Создание фигуры (self.fig и self.ax)
-        self.fig1 = fig
-        self.ax1 = ax
-        # Создание холста
-        self.canvas1 = FigureCanvas(self.fig1)
-        self.layout_plot_1.addWidget(self.canvas1)
-        self.canvas1.draw()
-        # Создание Toolbar
-        self.toolbar1 = NavigationToolbar(self.canvas1, self.widget_plot_1,
-                                          coordinates=True)
-        self.layout_plot_1.addWidget(self.toolbar1)
-
-        # Пустой нижний график
-
-    def initialize_figure2(self, fig, ax):
-        # Инициализирует фигуру matplotlib внутри контейнера GUI.
-        # Вызываем только один раз при инициализации
-
-        # Создание фигуры (self.fig и self.ax)
-        self.fig2 = fig
-        self.ax2 = ax
-        # Создание холста
-        self.canvas2 = FigureCanvas(self.fig2)
-        self.layout_plot_2.addWidget(self.canvas2)
-        self.canvas2.draw()
-        # Создание Toolbar
-        self.toolbar2 = NavigationToolbar(self.canvas2, self.widget_plot_2,
-                                          coordinates=True)
-        self.layout_plot_2.addWidget(self.toolbar2)
-
     # Инициализация: Пустая таблица
     def initialize_table(self):
         self.tableWidget_frequency_absorption.clear()
@@ -371,8 +279,6 @@ class GuiProgram(Ui_Dialog):
         self.tableWidget_frequency_absorption.setHorizontalHeaderLabels(["Частота МГц", "Гамма", ""])
         self.tableWidget_frequency_absorption.horizontalHeaderItem(0).setTextAlignment(Qt.AlignHCenter)
         self.tableWidget_frequency_absorption.horizontalHeaderItem(1).setTextAlignment(Qt.AlignHCenter)
-
-        # Инициализация: Пустой верхний график
 
     ######################################
     #           ПРОВЕРКИ ВВОДА
@@ -493,7 +399,7 @@ class GuiProgram(Ui_Dialog):
     # (*) Корректность всех данных обработки
     def checking_all_processing_parameters(self, message=False):
         return (
-            # (1) ДАННЫЕ
+                # (1) ДАННЫЕ
                 self.check_data_without_gas() and
                 self.check_data_with_gas() and
                 # (2) Корреляция
@@ -584,7 +490,7 @@ class GuiProgram(Ui_Dialog):
         ####################################################
 
         # Отрисовка
-        self.updating_gas_graph()
+        drawer.updating_gas_graph(graph=self.graph_1, data_signals=self.data_signals)
 
     # Основная программа - (2) Чтение и построение полезного сигнала
     def signal_plotting(self, skip_read=False):
@@ -657,7 +563,7 @@ class GuiProgram(Ui_Dialog):
         ####################################################
 
         # Отрисовка
-        self.updating_gas_graph()
+        drawer.updating_gas_graph(graph=self.graph_1, data_signals=self.data_signals)
 
     # Основная программа - (3) Расчет разницы, порога, интервалов, частот поглощения, отображение на графиках
     def processing(self):
@@ -713,7 +619,7 @@ class GuiProgram(Ui_Dialog):
 
         self.data_signals.width_filter(erosion, dilation)
 
-        self.updating_width_filter_graph()
+        drawer.updating_width_filter_graph(graph=self.graph_2, data_signals=self.data_signals)
         # # Запрос порогового значения
         # threshold = float(self.lineEdit_threshold.text())
         #
@@ -830,15 +736,15 @@ class GuiProgram(Ui_Dialog):
         frequency_start = self.data_signals.frequency_peak[row] - frequency_left_or_right
         frequency_end = self.data_signals.frequency_peak[row] + frequency_left_or_right
 
-        self.ax1.set_xlim([frequency_start, frequency_end])
-
-        self.ax1.set_ylim([
-            self.data_signals.data_with_gas[frequency_start:frequency_end].min(),
-            self.data_signals.gamma_peak[row] * 1.2
-        ])
-
-        # Перерисовываем
-        self.canvas1.draw()
+        # self.ax1.set_xlim([frequency_start, frequency_end])
+        #
+        # self.ax1.set_ylim([
+        #     self.data_signals.data_with_gas[frequency_start:frequency_end].min(),
+        #     self.data_signals.gamma_peak[row] * 1.2
+        # ])
+        #
+        # # Перерисовываем
+        # self.canvas1.draw()
 
     # Кнопка сохранения таблицы
     def saving_data(self):
@@ -903,173 +809,6 @@ class GuiProgram(Ui_Dialog):
         # Перебираем строки
         for i in range(self.tableWidget_frequency_absorption.rowCount()):
             self.tableWidget_frequency_absorption.cellWidget(i, 2).setCheckState(state_check_box)
-
-    # ОБНОВЛЕНИЕ
-    # График газов
-    def updating_gas_graph(self, list_absorbing=None):
-        # Данных нет - сброс
-        if self.data_signals.data["without_gas"].empty and self.data_signals.data["with_gas"].empty and list_absorbing:
-            return
-
-        # Очистка и подпись графика (вызывается в начале)
-        cleaning_and_chart_graph(
-            # Объекты графика
-            toolbar=self.toolbar1, axis=self.ax1,
-            # Название графика
-            title=self.title_data,
-            # Подпись осей
-            x_label=self.horizontal_axis_name_data, y_label=self.vertical_axis_name_data
-        )
-
-        # Если есть данные без газа, строим график
-        if not self.data_signals.data["without_gas"].empty:
-            self.ax1.plot(
-                self.data_signals.data["frequency"],
-                self.data_signals.data["without_gas"],
-                color=self.color_without_gas, label=self.name_without_gas)
-        # Если есть данные с газом, строим график
-        if not self.data_signals.data["with_gas"].empty:
-            self.ax1.plot(
-                self.data_signals.data["frequency"],
-                self.data_signals.data["with_gas"],
-                color=self.color_with_gas, label=self.name_with_gas)
-        # Выделение промежутков
-        if list_absorbing:
-
-            self.ax1.plot(
-                list_absorbing[0].index, list_absorbing[0].values,
-                color=self.color_absorbing, label=self.list_absorbing
-            )
-
-            for i in list_absorbing:
-                self.ax1.plot(i.index, i.values, color=self.color_absorbing)
-
-        # Отрисовка (вызывается в конце)
-        draw_graph(axis=self.ax1, figure=self.fig1, canvas=self.canvas1)
-
-    # График корреляции
-    def updating_correlation_graph(self, threshold=None):
-        # Данных нет - сброс
-        if self.data_signals.data["correlate"].isnull().values.all() and not (threshold is None):
-            return
-
-        # Очистка и подпись графика (вызывается в начале)
-        cleaning_and_chart_graph(
-            # Объекты графика
-            toolbar=self.toolbar2, axis=self.ax2,
-            # Название графика
-            title=self.title_correlation,
-            # Подпись осей
-            x_label=self.horizontal_axis_name_correlation, y_label=self.vertical_axis_name_correlation
-        )
-
-        # Если есть данные корреляции, строим график
-        if not self.data_signals.data["correlate"].isnull().values.all():
-            self.ax2.plot(
-                self.data_signals.data["frequency"],
-                self.data_signals.data["correlate"],
-                color=self.color_correlation, label=self.name_correlation)
-        # Если есть порог, строим график
-        if not (threshold is None):
-            self.ax2.plot(
-                threshold.index,
-                threshold.values,
-                color=self.color_threshold, label=self.list_threshold)
-
-        # Отрисовка (вызывается в конце)
-        draw_graph(axis=self.ax2, figure=self.fig2, canvas=self.canvas2)
-
-    # График сглаженный
-    def updating_smoothing_graph(self):
-        # Данных нет (не_пустые.значения.во_всех_строчках) - сброс ()
-        if (self.data_signals.data["smoothed_without_gas"].isnull().values.all() and
-                self.data_signals.data["without_gas"].isnull().values.all()):
-            return
-
-        # Очистка и подпись графика (вызывается в начале)
-        cleaning_and_chart_graph(
-            # Объекты графика
-            toolbar=self.toolbar2, axis=self.ax2,
-            # Название графика
-            title=self.title_smoothing,
-            # Подпись осей
-            x_label=self.horizontal_axis_name_smoothing, y_label=self.vertical_axis_name_smoothing
-        )
-
-        # График без вещества
-        self.ax2.plot(
-            self.data_signals.data["frequency"],
-            self.data_signals.data["without_gas"],
-            color=self.color_without_gas, label=self.name_without_gas)
-        # Сглаженный график без вещества
-        self.ax2.plot(
-            self.data_signals.data["frequency"],
-            self.data_signals.data["smoothed_without_gas"],
-            color=self.color_smoothing, label=self.name_smoothing)
-
-        # Отрисовка (вызывается в конце)
-        draw_graph(axis=self.ax2, figure=self.fig2, canvas=self.canvas2)
-
-    # График сигмы и разницы
-    def updating_sigma_and_difference_graph(self):
-        # Данных нет (не_пустые.значения.во_всех_строчках) - сброс ()
-        if (self.data_signals.data["difference"].isnull().values.all() and
-                self.data_signals.data["sigma_with_multiplier"].isnull().values.all()):
-            return
-
-        # Очистка и подпись графика (вызывается в начале)
-        cleaning_and_chart_graph(
-            # Объекты графика
-            toolbar=self.toolbar2, axis=self.ax2,
-            # Название графика
-            title=self.title_sigma_and_difference,
-            # Подпись осей
-            x_label=self.horizontal_axis_name_sigma_and_difference, y_label=self.vertical_axis_name_sigma_and_difference
-        )
-
-        # Разница
-        self.ax2.plot(
-            self.data_signals.data["frequency"],
-            self.data_signals.data["difference"],
-            color=self.color_difference, label=self.name_difference)
-        # Сигма
-        self.ax2.plot(
-            self.data_signals.data["frequency"],
-            self.data_signals.data["sigma_with_multiplier"],
-            color=self.color_sigma, label=self.name_sigma)
-
-        # Отрисовка (вызывается в конце)
-        draw_graph(axis=self.ax2, figure=self.fig2, canvas=self.canvas2)
-
-    # График обработки ширины участка
-    def updating_width_filter_graph(self):
-        # Данных нет (не_пустые.значения.во_всех_строчках) - сброс ()
-        if self.data_signals.data["bool_result"].isnull().values.all():
-            return
-
-        # Очистка и подпись графика (вызывается в начале)
-        cleaning_and_chart_graph(
-            # Объекты графика
-            toolbar=self.toolbar2, axis=self.ax2,
-            # Название графика
-            title=self.title_filter_by_area_width,
-            # Подпись осей
-            x_label=self.horizontal_axis_name_filter_by_area_width, y_label=self.vertical_axis_name_filter_by_area_width
-        )
-
-        # Разница
-        self.ax2.plot(
-            self.data_signals.data["frequency"],
-            self.data_signals.data["bool_difference"],
-            color=self.color_filter_beginning, label=self.name_filter_beginning)
-        # Сигма
-        self.ax2.plot(
-            self.data_signals.data["frequency"],
-            self.data_signals.data["bool_result"],
-            color=self.color_filter_end, label=self.name_filter_end)
-
-        # Отрисовка (вызывается в конце)
-        draw_graph(axis=self.ax2, figure=self.fig2, canvas=self.canvas2)
 
     # ВСЯКОЕ
     # Диапазон частот
