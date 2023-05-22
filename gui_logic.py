@@ -14,11 +14,6 @@ from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtGui import QIcon
 
 import matplotlib
-from matplotlib.figure import Figure
-from matplotlib.backends.backend_qt5agg import (
-    FigureCanvasQTAgg as FigureCanvas,
-    NavigationToolbar2QT as NavigationToolbar)
-
 matplotlib.use('TkAgg')
 
 
@@ -168,31 +163,6 @@ def check(line_edit, check_function, check_box, field_name, message=False):
     return False
 
 
-# ШАБЛОН ОТРИСОВКИ ГРАФИКОВ
-# Очистка и подпись графика (вызывается в начале)
-def cleaning_and_chart_graph(toolbar, axis, x_label, y_label, title):
-    toolbar.home()  # Возвращаем зум
-    toolbar.update()  # Очищаем стек осей (от старых x, y lim)
-    # Очищаем график
-    axis.clear()
-    # Название осей и графика
-    axis.set_xlabel(x_label)
-    axis.set_ylabel(y_label)
-    axis.set_title(title)
-
-
-# Отрисовка (вызывается в конце)
-def draw_graph(axis, figure, canvas):
-    # Рисуем сетку
-    axis.grid()
-    # Инициирует отображение названия графика и различных надписей на нем.
-    axis.legend()
-    # Убеждаемся, что все помещается внутри холста
-    figure.tight_layout()
-    # Показываем новую фигуру в интерфейсе
-    canvas.draw()
-
-
 # КЛАСС АЛГОРИТМА ПРИЛОЖЕНИЯ
 class GuiProgram(Ui_Dialog):
     def __init__(self, dialog):
@@ -233,14 +203,16 @@ class GuiProgram(Ui_Dialog):
         # Параметры 1 графика
         self.graph_1 = Graph(
             layout=self.layout_plot_1,
-            widget=self.widget_plot_1
+            widget=self.widget_plot_1,
+            layout_toolbar=self.layout_toolbar_1
         )
         self.graph_1.initialize()
 
         # Параметры 2 графика
         self.graph_2 = Graph(
             layout=self.layout_plot_2,
-            widget=self.widget_plot_2
+            widget=self.widget_plot_2,
+            layout_toolbar=self.layout_toolbar_2
         )
         self.graph_2.initialize()
 

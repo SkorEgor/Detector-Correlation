@@ -5,7 +5,7 @@ from matplotlib.backends.backend_qt5agg import (
 
 
 class Graph:
-    def __init__(self, layout, widget):
+    def __init__(self, layout, widget, layout_toolbar=None):
         # Объекты графика
         self.axis = None
         self.figure = None
@@ -13,6 +13,10 @@ class Graph:
         self.toolbar = None
         self.layout = layout
         self.widget = widget
+        if layout_toolbar is None:
+            self.layout_toolbar = layout
+        else:
+            self.layout_toolbar = layout_toolbar
 
     def initialize(self):
         # Инициализирует фигуру matplotlib внутри контейнера GUI.
@@ -27,4 +31,4 @@ class Graph:
         self.canvas.draw()
         # Создание Toolbar
         self.toolbar = NavigationToolbar(self.canvas, self.widget, coordinates=True)
-        self.layout.addWidget(self.toolbar)
+        self.layout_toolbar.addWidget(self.toolbar)

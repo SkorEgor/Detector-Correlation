@@ -279,7 +279,7 @@ class Ui_Dialog(object):
         self.scrollArea_menu_body.setAlignment(QtCore.Qt.AlignCenter)
         self.scrollArea_menu_body.setObjectName("scrollArea_menu_body")
         self.scrollAreaWidgetContents = QtWidgets.QWidget()
-        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, -412, 206, 890))
+        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 206, 890))
         self.scrollAreaWidgetContents.setStyleSheet("")
         self.scrollAreaWidgetContents.setObjectName("scrollAreaWidgetContents")
         self.Layout_scroll_menu = QtWidgets.QVBoxLayout(self.scrollAreaWidgetContents)
@@ -1005,7 +1005,7 @@ class Ui_Dialog(object):
         font.setWeight(50)
         self.lineEdit_smoothing.setFont(font)
         self.lineEdit_smoothing.setStyleSheet("")
-        self.lineEdit_smoothing.setText("6")
+        self.lineEdit_smoothing.setText("5")
         self.lineEdit_smoothing.setMaxLength(10)
         self.lineEdit_smoothing.setAlignment(QtCore.Qt.AlignCenter)
         self.lineEdit_smoothing.setDragEnabled(False)
@@ -1089,7 +1089,7 @@ class Ui_Dialog(object):
         font.setWeight(50)
         self.lineEdit_smoothing_sigma_window_width.setFont(font)
         self.lineEdit_smoothing_sigma_window_width.setStyleSheet("")
-        self.lineEdit_smoothing_sigma_window_width.setText("6")
+        self.lineEdit_smoothing_sigma_window_width.setText("5")
         self.lineEdit_smoothing_sigma_window_width.setMaxLength(10)
         self.lineEdit_smoothing_sigma_window_width.setAlignment(QtCore.Qt.AlignCenter)
         self.lineEdit_smoothing_sigma_window_width.setDragEnabled(False)
@@ -1544,30 +1544,444 @@ class Ui_Dialog(object):
         self.layout__main_body.setSpacing(0)
         self.layout__main_body.setObjectName("layout__main_body")
         self.widget_plotting = QtWidgets.QWidget(self.widget_main_body)
-        self.widget_plotting.setStyleSheet("background-color: rgb(167, 167, 167);\n"
-"background-color: rgb(124, 124, 124);\n"
-"background-color: rgb(255, 255, 255);\n"
+        self.widget_plotting.setStyleSheet("QWidget{\n"
 "background-color: rgb(240, 240, 240);\n"
-"color: rgb(0, 0, 0);")
+"color: rgb(0, 0, 0);\n"
+"}")
         self.widget_plotting.setObjectName("widget_plotting")
-        self.verticalLayout = QtWidgets.QVBoxLayout(self.widget_plotting)
-        self.verticalLayout.setContentsMargins(0, 0, 0, 0)
-        self.verticalLayout.setSpacing(0)
-        self.verticalLayout.setObjectName("verticalLayout")
+        self.layout_plotting = QtWidgets.QVBoxLayout(self.widget_plotting)
+        self.layout_plotting.setContentsMargins(0, 0, 0, 0)
+        self.layout_plotting.setSpacing(0)
+        self.layout_plotting.setObjectName("layout_plotting")
         self.widget_plot_1 = QtWidgets.QWidget(self.widget_plotting)
         self.widget_plot_1.setObjectName("widget_plot_1")
         self.layout_plot_1 = QtWidgets.QVBoxLayout(self.widget_plot_1)
         self.layout_plot_1.setContentsMargins(0, 0, 0, 0)
         self.layout_plot_1.setSpacing(0)
         self.layout_plot_1.setObjectName("layout_plot_1")
-        self.verticalLayout.addWidget(self.widget_plot_1)
+        self.layout_plotting.addWidget(self.widget_plot_1)
+        self.widget_toolbar_1 = QtWidgets.QWidget(self.widget_plotting)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Maximum)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.widget_toolbar_1.sizePolicy().hasHeightForWidth())
+        self.widget_toolbar_1.setSizePolicy(sizePolicy)
+        self.widget_toolbar_1.setStyleSheet("QWidget{\n"
+"background-color: rgb(240, 240, 240);\n"
+"color: rgb(0, 0, 0);\n"
+"    font-size: none;\n"
+"text-align:bottom;\n"
+"}\n"
+"\n"
+"/* /////////////////////////////////////////////////////////////////////////////////////////////////\n"
+"QPushButton */\n"
+"/*Стандартное состояние для кнопки*/\n"
+"QPushButton {\n"
+"    border: none;        /* задает границу элемента */\n"
+"} \n"
+"\n"
+"/* срабатывает, когда пользователь наводит на элемент мышью */\n"
+"QPushButton:hover {\n"
+"    border: none;                                                /* без границ */\n"
+"\n"
+"    border-right:1px solid rgb(160, 160, 160);    /* С правой красной раницей */\n"
+"    border-bottom:1px solid rgb(160, 160, 160);\n"
+"\n"
+"    border-left:1px solid rgb(255, 255, 255);    /* С правой красной раницей */\n"
+"    border-top:1px solid rgb(255, 255, 255);\n"
+"}\n"
+"\n"
+"\n"
+"/* срабатывает, при нажатии*/\n"
+"QPushButton:pressed      {\n"
+"    border: none;                                                /* без границ */\n"
+"\n"
+"    border-left:1px solid rgb(160, 160, 160);    /* С правой красной раницей */\n"
+"    border-top:1px solid rgb(160, 160, 160);\n"
+"\n"
+"    border-right:1px solid rgb(255, 255, 255);    /* С правой красной раницей */\n"
+"    border-bottom:1px solid rgb(255, 255, 255);\n"
+"}\n"
+"/* ///////////////////////////////////////////////////////////////////////////////////////////////// */\n"
+"")
+        self.widget_toolbar_1.setObjectName("widget_toolbar_1")
+        self.layout_toolbar_1 = QtWidgets.QHBoxLayout(self.widget_toolbar_1)
+        self.layout_toolbar_1.setContentsMargins(5, 0, 5, 0)
+        self.layout_toolbar_1.setSpacing(5)
+        self.layout_toolbar_1.setObjectName("layout_toolbar_1")
+        self.widget_select_graphic = QtWidgets.QWidget(self.widget_toolbar_1)
+        self.widget_select_graphic.setStyleSheet(".QWidget{\n"
+"    border: none;                                                /* без границ */\n"
+"\n"
+"    border-right:2px solid rgb(33, 37, 43);    /* С правой красной раницей */\n"
+"}")
+        self.widget_select_graphic.setObjectName("widget_select_graphic")
+        self.horizontalLayout = QtWidgets.QHBoxLayout(self.widget_select_graphic)
+        self.horizontalLayout.setContentsMargins(0, 0, 5, 0)
+        self.horizontalLayout.setSpacing(0)
+        self.horizontalLayout.setObjectName("horizontalLayout")
+        self.radioButton = QtWidgets.QRadioButton(self.widget_select_graphic)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.radioButton.sizePolicy().hasHeightForWidth())
+        self.radioButton.setSizePolicy(sizePolicy)
+        self.radioButton.setMinimumSize(QtCore.QSize(33, 33))
+        self.radioButton.setMaximumSize(QtCore.QSize(33, 33))
+        self.radioButton.setStyleSheet("/* /////////////////////////////////////////////////////////////////////////////////////////////////\n"
+"RadioButton */\n"
+"QRadioButton::indicator {\n"
+"image: url(:/menu_black/resource/menu_titles_black/menu_data_black_36dp.svg);\n"
+"    background-color: rgb(240, 240, 240);\n"
+"    border:none;\n"
+"    border-radius: 0px;\n"
+"    width: 31px;\n"
+"    height: 31px;\n"
+"}\n"
+"QRadioButton::indicator:hover {\n"
+"    border: none;                                                /* без границ */\n"
+"\n"
+"    border-right:1px solid rgb(160, 160, 160);    /* С правой красной раницей */\n"
+"    border-bottom:1px solid rgb(160, 160, 160);\n"
+"\n"
+"    border-left:1px solid rgb(255, 255, 255);    /* С правой красной раницей */\n"
+"    border-top:1px solid rgb(255, 255, 255);\n"
+"}\n"
+"QRadioButton::indicator:checked {\n"
+"    border: none;                                                /* без границ */\n"
+"\n"
+"    border-left:1px solid rgb(160, 160, 160);    /* С правой красной раницей */\n"
+"    border-top:1px solid rgb(160, 160, 160);\n"
+"\n"
+"    border-right:1px solid rgb(255, 255, 255);    /* С правой красной раницей */\n"
+"    border-bottom:1px solid rgb(255, 255, 255);\n"
+"\n"
+"}\n"
+"\n"
+"/* ///////////////////////////////////////////////////////////////////////////////////////////////// */")
+        self.radioButton.setText("")
+        self.radioButton.setIconSize(QtCore.QSize(20, 20))
+        self.radioButton.setChecked(False)
+        self.radioButton.setAutoRepeat(False)
+        self.radioButton.setObjectName("radioButton")
+        self.horizontalLayout.addWidget(self.radioButton)
+        self.radioButton_2 = QtWidgets.QRadioButton(self.widget_select_graphic)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.radioButton_2.sizePolicy().hasHeightForWidth())
+        self.radioButton_2.setSizePolicy(sizePolicy)
+        self.radioButton_2.setMinimumSize(QtCore.QSize(33, 33))
+        self.radioButton_2.setMaximumSize(QtCore.QSize(33, 33))
+        self.radioButton_2.setStyleSheet("/* /////////////////////////////////////////////////////////////////////////////////////////////////\n"
+"RadioButton */\n"
+"QRadioButton::indicator {\n"
+"    image: url(:/menu_black/resource/menu_titles_black/menu_correlation_black_36dp.svg);\n"
+"    background-color: rgb(240, 240, 240);\n"
+"    border:none;\n"
+"    border-radius: 0px;\n"
+"    width: 31px;\n"
+"    height: 31px;\n"
+"}\n"
+"QRadioButton::indicator:hover {\n"
+"    border: none;                                                /* без границ */\n"
+"\n"
+"    border-right:1px solid rgb(160, 160, 160);    /* С правой красной раницей */\n"
+"    border-bottom:1px solid rgb(160, 160, 160);\n"
+"\n"
+"    border-left:1px solid rgb(255, 255, 255);    /* С правой красной раницей */\n"
+"    border-top:1px solid rgb(255, 255, 255);\n"
+"}\n"
+"QRadioButton::indicator:checked {\n"
+"    border: none;                                                /* без границ */\n"
+"\n"
+"    border-left:1px solid rgb(160, 160, 160);    /* С правой красной раницей */\n"
+"    border-top:1px solid rgb(160, 160, 160);\n"
+"\n"
+"    border-right:1px solid rgb(255, 255, 255);    /* С правой красной раницей */\n"
+"    border-bottom:1px solid rgb(255, 255, 255);\n"
+"\n"
+"}\n"
+"\n"
+"/* ///////////////////////////////////////////////////////////////////////////////////////////////// */")
+        self.radioButton_2.setText("")
+        self.radioButton_2.setIconSize(QtCore.QSize(20, 20))
+        self.radioButton_2.setChecked(False)
+        self.radioButton_2.setAutoRepeat(False)
+        self.radioButton_2.setObjectName("radioButton_2")
+        self.horizontalLayout.addWidget(self.radioButton_2)
+        self.radioButton_3 = QtWidgets.QRadioButton(self.widget_select_graphic)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.radioButton_3.sizePolicy().hasHeightForWidth())
+        self.radioButton_3.setSizePolicy(sizePolicy)
+        self.radioButton_3.setMinimumSize(QtCore.QSize(33, 33))
+        self.radioButton_3.setMaximumSize(QtCore.QSize(33, 33))
+        self.radioButton_3.setStyleSheet("/* /////////////////////////////////////////////////////////////////////////////////////////////////\n"
+"RadioButton */\n"
+"QRadioButton::indicator {\n"
+"    \n"
+"    image: url(:/menu_black/resource/menu_titles_black/sigma_black.svg);\n"
+"    background-color: rgb(240, 240, 240);\n"
+"    border:none;\n"
+"    border-radius: 0px;\n"
+"    width: 31px;\n"
+"    height: 31px;\n"
+"}\n"
+"QRadioButton::indicator:hover {\n"
+"    border: none;                                                /* без границ */\n"
+"\n"
+"    border-right:1px solid rgb(160, 160, 160);    /* С правой красной раницей */\n"
+"    border-bottom:1px solid rgb(160, 160, 160);\n"
+"\n"
+"    border-left:1px solid rgb(255, 255, 255);    /* С правой красной раницей */\n"
+"    border-top:1px solid rgb(255, 255, 255);\n"
+"}\n"
+"QRadioButton::indicator:checked {\n"
+"    border: none;                                                /* без границ */\n"
+"\n"
+"    border-left:1px solid rgb(160, 160, 160);    /* С правой красной раницей */\n"
+"    border-top:1px solid rgb(160, 160, 160);\n"
+"\n"
+"    border-right:1px solid rgb(255, 255, 255);    /* С правой красной раницей */\n"
+"    border-bottom:1px solid rgb(255, 255, 255);\n"
+"\n"
+"}\n"
+"\n"
+"/* ///////////////////////////////////////////////////////////////////////////////////////////////// */")
+        self.radioButton_3.setText("")
+        self.radioButton_3.setIconSize(QtCore.QSize(20, 20))
+        self.radioButton_3.setChecked(False)
+        self.radioButton_3.setAutoRepeat(False)
+        self.radioButton_3.setObjectName("radioButton_3")
+        self.horizontalLayout.addWidget(self.radioButton_3)
+        self.radioButton_4 = QtWidgets.QRadioButton(self.widget_select_graphic)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.radioButton_4.sizePolicy().hasHeightForWidth())
+        self.radioButton_4.setSizePolicy(sizePolicy)
+        self.radioButton_4.setMinimumSize(QtCore.QSize(33, 33))
+        self.radioButton_4.setMaximumSize(QtCore.QSize(33, 33))
+        self.radioButton_4.setStyleSheet("/* /////////////////////////////////////////////////////////////////////////////////////////////////\n"
+"RadioButton */\n"
+"QRadioButton::indicator {\n"
+"image: url(:/menu_black/resource/menu_titles_black/menu_noise_black_36dp.svg);\n"
+"    background-color: rgb(240, 240, 240);\n"
+"    border:none;\n"
+"    border-radius: 0px;\n"
+"    width: 31px;\n"
+"    height: 31px;\n"
+"}\n"
+"QRadioButton::indicator:hover {\n"
+"    border: none;                                                /* без границ */\n"
+"\n"
+"    border-right:1px solid rgb(160, 160, 160);    /* С правой красной раницей */\n"
+"    border-bottom:1px solid rgb(160, 160, 160);\n"
+"\n"
+"    border-left:1px solid rgb(255, 255, 255);    /* С правой красной раницей */\n"
+"    border-top:1px solid rgb(255, 255, 255);\n"
+"}\n"
+"QRadioButton::indicator:checked {\n"
+"    border: none;                                                /* без границ */\n"
+"\n"
+"    border-left:1px solid rgb(160, 160, 160);    /* С правой красной раницей */\n"
+"    border-top:1px solid rgb(160, 160, 160);\n"
+"\n"
+"    border-right:1px solid rgb(255, 255, 255);    /* С правой красной раницей */\n"
+"    border-bottom:1px solid rgb(255, 255, 255);\n"
+"\n"
+"}\n"
+"\n"
+"/* ///////////////////////////////////////////////////////////////////////////////////////////////// */")
+        self.radioButton_4.setText("")
+        self.radioButton_4.setIconSize(QtCore.QSize(20, 20))
+        self.radioButton_4.setChecked(False)
+        self.radioButton_4.setAutoRepeat(False)
+        self.radioButton_4.setObjectName("radioButton_4")
+        self.horizontalLayout.addWidget(self.radioButton_4)
+        self.radioButton_5 = QtWidgets.QRadioButton(self.widget_select_graphic)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.radioButton_5.sizePolicy().hasHeightForWidth())
+        self.radioButton_5.setSizePolicy(sizePolicy)
+        self.radioButton_5.setMinimumSize(QtCore.QSize(33, 33))
+        self.radioButton_5.setMaximumSize(QtCore.QSize(33, 33))
+        self.radioButton_5.setStyleSheet("/* /////////////////////////////////////////////////////////////////////////////////////////////////\n"
+"RadioButton */\n"
+"QRadioButton::indicator {\n"
+"image: url(:/menu_black/resource/menu_titles_black/menu_width_black_36dp.svg);\n"
+"    background-color: rgb(240, 240, 240);\n"
+"    border:none;\n"
+"    border-radius: 0px;\n"
+"    width: 31px;\n"
+"    height: 31px;\n"
+"}\n"
+"QRadioButton::indicator:hover {\n"
+"    border: none;                                                /* без границ */\n"
+"\n"
+"    border-right:1px solid rgb(160, 160, 160);    /* С правой красной раницей */\n"
+"    border-bottom:1px solid rgb(160, 160, 160);\n"
+"\n"
+"    border-left:1px solid rgb(255, 255, 255);    /* С правой красной раницей */\n"
+"    border-top:1px solid rgb(255, 255, 255);\n"
+"}\n"
+"QRadioButton::indicator:checked {\n"
+"    border: none;                                                /* без границ */\n"
+"\n"
+"    border-left:1px solid rgb(160, 160, 160);    /* С правой красной раницей */\n"
+"    border-top:1px solid rgb(160, 160, 160);\n"
+"\n"
+"    border-right:1px solid rgb(255, 255, 255);    /* С правой красной раницей */\n"
+"    border-bottom:1px solid rgb(255, 255, 255);\n"
+"\n"
+"}\n"
+"\n"
+"/* ///////////////////////////////////////////////////////////////////////////////////////////////// */")
+        self.radioButton_5.setText("")
+        self.radioButton_5.setIconSize(QtCore.QSize(20, 20))
+        self.radioButton_5.setChecked(True)
+        self.radioButton_5.setAutoRepeat(False)
+        self.radioButton_5.setObjectName("radioButton_5")
+        self.horizontalLayout.addWidget(self.radioButton_5)
+        self.layout_toolbar_1.addWidget(self.widget_select_graphic)
+        self.layout_plotting.addWidget(self.widget_toolbar_1)
         self.widget_plot_2 = QtWidgets.QWidget(self.widget_plotting)
         self.widget_plot_2.setObjectName("widget_plot_2")
         self.layout_plot_2 = QtWidgets.QVBoxLayout(self.widget_plot_2)
         self.layout_plot_2.setContentsMargins(0, 0, 0, 0)
         self.layout_plot_2.setSpacing(0)
         self.layout_plot_2.setObjectName("layout_plot_2")
-        self.verticalLayout.addWidget(self.widget_plot_2)
+        self.layout_plotting.addWidget(self.widget_plot_2)
+        self.widget_toolbar_2 = QtWidgets.QWidget(self.widget_plotting)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Maximum)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.widget_toolbar_2.sizePolicy().hasHeightForWidth())
+        self.widget_toolbar_2.setSizePolicy(sizePolicy)
+        self.widget_toolbar_2.setStyleSheet("QWidget{\n"
+"background-color: rgb(240, 240, 240);\n"
+"color: rgb(0, 0, 0);\n"
+"    font-size: none;\n"
+"text-align:bottom;\n"
+"}\n"
+"\n"
+"/* /////////////////////////////////////////////////////////////////////////////////////////////////\n"
+"QPushButton */\n"
+"/*Стандартное состояние для кнопки*/\n"
+"QPushButton {\n"
+"    border: none;        /* задает границу элемента */\n"
+"} \n"
+"\n"
+"/* срабатывает, когда пользователь наводит на элемент мышью */\n"
+"QPushButton:hover {\n"
+"    border: none;                                                /* без границ */\n"
+"\n"
+"    border-right:1px solid rgb(160, 160, 160);    /* С правой красной раницей */\n"
+"    border-bottom:1px solid rgb(160, 160, 160);\n"
+"\n"
+"    border-left:1px solid rgb(255, 255, 255);    /* С правой красной раницей */\n"
+"    border-top:1px solid rgb(255, 255, 255);\n"
+"}\n"
+"\n"
+"\n"
+"/* срабатывает, при нажатии*/\n"
+"QPushButton:pressed      {\n"
+"    border: none;                                                /* без границ */\n"
+"\n"
+"    border-left:1px solid rgb(160, 160, 160);    /* С правой красной раницей */\n"
+"    border-top:1px solid rgb(160, 160, 160);\n"
+"\n"
+"    border-right:1px solid rgb(255, 255, 255);    /* С правой красной раницей */\n"
+"    border-bottom:1px solid rgb(255, 255, 255);\n"
+"}\n"
+"/* ///////////////////////////////////////////////////////////////////////////////////////////////// */\n"
+"")
+        self.widget_toolbar_2.setObjectName("widget_toolbar_2")
+        self.layout_toolbar_2 = QtWidgets.QHBoxLayout(self.widget_toolbar_2)
+        self.layout_toolbar_2.setContentsMargins(5, 0, 5, 0)
+        self.layout_toolbar_2.setSpacing(5)
+        self.layout_toolbar_2.setObjectName("layout_toolbar_2")
+        self.pushButton_data_graph_2 = QtWidgets.QPushButton(self.widget_toolbar_2)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Maximum)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.pushButton_data_graph_2.sizePolicy().hasHeightForWidth())
+        self.pushButton_data_graph_2.setSizePolicy(sizePolicy)
+        self.pushButton_data_graph_2.setMinimumSize(QtCore.QSize(33, 33))
+        self.pushButton_data_graph_2.setMaximumSize(QtCore.QSize(33, 33))
+        self.pushButton_data_graph_2.setText("")
+        icon2 = QtGui.QIcon()
+        icon2.addPixmap(QtGui.QPixmap(":/menu_black/resource/menu_titles_black/menu_data_black_36dp.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.pushButton_data_graph_2.setIcon(icon2)
+        self.pushButton_data_graph_2.setIconSize(QtCore.QSize(25, 25))
+        self.pushButton_data_graph_2.setObjectName("pushButton_data_graph_2")
+        self.layout_toolbar_2.addWidget(self.pushButton_data_graph_2)
+        self.pushButton_correlation_graph_2 = QtWidgets.QPushButton(self.widget_toolbar_2)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Maximum)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.pushButton_correlation_graph_2.sizePolicy().hasHeightForWidth())
+        self.pushButton_correlation_graph_2.setSizePolicy(sizePolicy)
+        self.pushButton_correlation_graph_2.setMinimumSize(QtCore.QSize(33, 33))
+        self.pushButton_correlation_graph_2.setMaximumSize(QtCore.QSize(33, 33))
+        self.pushButton_correlation_graph_2.setText("")
+        icon3 = QtGui.QIcon()
+        icon3.addPixmap(QtGui.QPixmap(":/menu_black/resource/menu_titles_black/menu_correlation_black_36dp.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.pushButton_correlation_graph_2.setIcon(icon3)
+        self.pushButton_correlation_graph_2.setIconSize(QtCore.QSize(25, 25))
+        self.pushButton_correlation_graph_2.setObjectName("pushButton_correlation_graph_2")
+        self.layout_toolbar_2.addWidget(self.pushButton_correlation_graph_2)
+        self.pushButton_sigma_grapgh_2 = QtWidgets.QPushButton(self.widget_toolbar_2)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Maximum)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.pushButton_sigma_grapgh_2.sizePolicy().hasHeightForWidth())
+        self.pushButton_sigma_grapgh_2.setSizePolicy(sizePolicy)
+        self.pushButton_sigma_grapgh_2.setMinimumSize(QtCore.QSize(33, 33))
+        self.pushButton_sigma_grapgh_2.setMaximumSize(QtCore.QSize(33, 33))
+        font = QtGui.QFont()
+        font.setPointSize(-1)
+        self.pushButton_sigma_grapgh_2.setFont(font)
+        self.pushButton_sigma_grapgh_2.setStyleSheet("font-size: 24px;\n"
+"text-align:top;")
+        self.pushButton_sigma_grapgh_2.setText("σ")
+        self.pushButton_sigma_grapgh_2.setIconSize(QtCore.QSize(33, 33))
+        self.pushButton_sigma_grapgh_2.setObjectName("pushButton_sigma_grapgh_2")
+        self.layout_toolbar_2.addWidget(self.pushButton_sigma_grapgh_2)
+        self.pushButton_noise_graph_2 = QtWidgets.QPushButton(self.widget_toolbar_2)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Maximum)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.pushButton_noise_graph_2.sizePolicy().hasHeightForWidth())
+        self.pushButton_noise_graph_2.setSizePolicy(sizePolicy)
+        self.pushButton_noise_graph_2.setMinimumSize(QtCore.QSize(33, 33))
+        self.pushButton_noise_graph_2.setMaximumSize(QtCore.QSize(33, 33))
+        self.pushButton_noise_graph_2.setText("")
+        icon4 = QtGui.QIcon()
+        icon4.addPixmap(QtGui.QPixmap(":/menu_black/resource/menu_titles_black/menu_noise_black_36dp.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.pushButton_noise_graph_2.setIcon(icon4)
+        self.pushButton_noise_graph_2.setIconSize(QtCore.QSize(25, 25))
+        self.pushButton_noise_graph_2.setObjectName("pushButton_noise_graph_2")
+        self.layout_toolbar_2.addWidget(self.pushButton_noise_graph_2)
+        self.pushButton_width_graph_2 = QtWidgets.QPushButton(self.widget_toolbar_2)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Maximum)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.pushButton_width_graph_2.sizePolicy().hasHeightForWidth())
+        self.pushButton_width_graph_2.setSizePolicy(sizePolicy)
+        self.pushButton_width_graph_2.setMinimumSize(QtCore.QSize(33, 33))
+        self.pushButton_width_graph_2.setMaximumSize(QtCore.QSize(33, 33))
+        self.pushButton_width_graph_2.setText("")
+        icon5 = QtGui.QIcon()
+        icon5.addPixmap(QtGui.QPixmap(":/menu_black/resource/menu_titles_black/menu_width_black_36dp.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.pushButton_width_graph_2.setIcon(icon5)
+        self.pushButton_width_graph_2.setIconSize(QtCore.QSize(25, 25))
+        self.pushButton_width_graph_2.setObjectName("pushButton_width_graph_2")
+        self.layout_toolbar_2.addWidget(self.pushButton_width_graph_2)
+        self.layout_plotting.addWidget(self.widget_toolbar_2)
         self.layout__main_body.addWidget(self.widget_plotting)
         self.widget_right = QtWidgets.QWidget(self.widget_main_body)
         self.widget_right.setStyleSheet("")

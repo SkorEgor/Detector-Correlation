@@ -31,4 +31,11 @@
     <file>resource/update/update1_white_18dp.svg</file>
     <file>resource/update/update2_white_18dp.svg</file>
   </qresource>
+  <qresource prefix="menu_black">
+    <file>resource/menu_titles_black/sigma_black.svg</file>
+    <file>resource/menu_titles_black/menu_correlation_black_36dp.svg</file>
+    <file>resource/menu_titles_black/menu_data_black_36dp.svg</file>
+    <file>resource/menu_titles_black/menu_noise_black_36dp.svg</file>
+    <file>resource/menu_titles_black/menu_width_black_36dp.svg</file>
+  </qresource>
 </RCC>
