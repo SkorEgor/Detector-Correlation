@@ -32,7 +32,6 @@ class DataAndProcessing:
             "bool_difference",  # Логический массив, разница данных выше сигмы
             "bool_result",  # Логический массив, после обработки на ширину
             "intervals_after_correlation",  # Интервалы поглощения после корреляции
-            "end_intervals"  # Интервалы после всех обработок
         ]
         self.data = pd.DataFrame(columns=self.names_data + self.names_processing)
 
@@ -42,47 +41,20 @@ class DataAndProcessing:
         # Точки линий поглощения, от корреляции (строчки: индекс и гамма)
         self.point_absorption_after_correlation = pd.DataFrame()
 
-        # Без шума
-        self.data_without_gas = pd.Series()
-
-        # Сигнал
-        self.data_with_gas = pd.Series()
-
-        # Корреляция
-        self.data_correlate = pd.Series()
-
-        # Сглаженный сигнал без шума
-        self.data_smoothed_without_gas = pd.Series()
-
-        # Сигма
-        self.data_sigma = pd.Series()
-
-        # Разница сигналов
-        self.data_difference = pd.Series()
-
-        # Логический массив, разница данных выше сигмы
-        self.bool_difference = pd.Series()
-
-        # Логический массив, после обработки на ширину
-        self.bool_result = pd.Series()
-
-        # Список диапазонов пиков
-        self.absorption_line_range = pd.Series()
-        self.absorption_line_ranges = []
-
-        # Список пиков
-        self.gamma_peak = []
-        self.frequency_peak = []
+        # Точки линий поглощения, после всех обработок (строчки: индекс и частота)
+        self.point_absorption_after_processing = pd.Series()
 
     # (*) Чистит данные процесса обработки
     def clear_data_processing(self):
         self.data[self.names_processing] = np.nan
         self.correlation_threshold = None
+        self.point_absorption_after_correlation = pd.DataFrame()
 
     # (*) Чистит все данные (альтернатива:  self.data = self.data.head(0))
     def clear_data(self):
         self.data = self.data.head(0)
         self.correlation_threshold = None
+        self.point_absorption_after_correlation = pd.DataFrame()
 
     # ОБРАБОТКА (1): Считаем корреляцию между данными
     def correlate(self, window_width):
@@ -173,7 +145,7 @@ class DataAndProcessing:
     # ind: 0 1 2 3 4 5 6 7 8 9 10-> ind: 1 5 9 -> (пары: с 1 по 2; с 5-6; с 9 по 9)
     # val: 1 5 8 1 3 9 8 1 0 8 0 -> val: 2 6 9
     @staticmethod
-    def find_intervals(samples, threshold):
+    def find_intervals_borders(samples, threshold):
         bool_samples = samples[samples >= threshold]
         xx = bool_samples.groupby((bool_samples.index != bool_samples.index.to_series().shift() + 1)
                                   .cumsum()).apply(lambda grp: (grp.index[0], grp.index[-1]))
@@ -201,7 +173,7 @@ class DataAndProcessing:
         return index, val
 
     # ОБРАБОТКА (*): ИНТЕРВАЛЫ И ТОЧКИ ЛИНИЙ ПОГЛОЩЕНИЯ
-    # АЛГОРИТМ
+    # АЛГОРИТМ ПОСЛЕ КОРРЕЛЯЦИИ
     # (1) Интервалы линий поглощение после корреляции
     def find_intervals_after_correlation(self):
         # нет данных - сброс
@@ -222,71 +194,17 @@ class DataAndProcessing:
             )})
         self.point_absorption_after_correlation["frequency"] = \
             self.data["frequency"][self.point_absorption_after_correlation.index]
+        self.point_absorption_after_correlation["status"] = False
 
-    # Находит интервалы индексов, значения которых выше порога
-    def calculation_frequency_indexes_above_threshold(self, threshold_value):
-        self.frequency_indexes_above_threshold.clear()
-        index_interval = []
-        last_index = 0
-        for i in range(1, self.data_difference.size):
-            # Если i-тый отсчет оказался больше порога
-            if self.data_difference[self.data_difference.index[i]] >= threshold_value:
-                # Если индекс идут друг за другом, записываем их в общий промежуток
-                if last_index + 1 == i:
-                    index_interval.append(i)
-                # Иначе сохраняем интервал в общий список и начинаем новый
-                else:
-                    if index_interval:
-                        self.frequency_indexes_above_threshold.append(index_interval)
-                    index_interval = [i]
-                # Сохраняем индекс последнего индекса
-                last_index = i
+    # АЛГОРИТМ ПОСЛЕ КОРРЕЛЯЦИИ
 
-        # Сохраняем результат в класс
-        self.frequency_indexes_above_threshold.append(index_interval)
+    def find_intervals_after_processing(self):
+        processing = self.data["frequency"][self.data["bool_result"]]
+        self.point_absorption_after_correlation["status"] = self.point_absorption_after_correlation["status"].index.\
+            isin(processing.index)
+        print("status",self.point_absorption_after_correlation["status"] )
 
-    # Интервалы значений выше порога, по интервалам индексов
-    def index_to_val_range(self):
-        # Очищаем от старых данных
-        self.absorption_line_ranges.clear()
-
-        # Перебираем интервалы индексов
-        for interval_i in self.frequency_indexes_above_threshold:
-            x = []
-            y = []
-            # Строим интервал значений
-            for i in interval_i:
-                x.append(self.data_with_gas.index[i])
-                y.append(self.data_with_gas[self.data_with_gas.index[i]])
-
-            # Интервал значений добавляем к общему списку
-            self.absorption_line_ranges.append(pd.Series(y, index=x))
-
-    # Находим интервалы значений выше порога
-    def range_above_threshold(self, threshold_value):
-        # Находим интервалы индексов выше порога
-        self.calculation_frequency_indexes_above_threshold(threshold_value)
-        # Находим интервалы значений
-        self.index_to_val_range()
-
-    # Перебирает интервалы значений и находит частоту поглощения
-    def search_peaks(self):
-        # Списки частот и гамм поглощения
-        frequency_peaks = []
-        gamma_peaks = []
-
-        # Перебираем интервалы выше порога
-        for i in self.absorption_line_ranges:
-            # Находим значение поглощения
-            f, g = search_for_peak_on_interval(list(i.index), list(i.values))
-
-            # Записываем в общий список
-            frequency_peaks.append(f)
-            gamma_peaks.append(g)
-
-        # Сохраняем в классе
-        self.frequency_peak = frequency_peaks
-        self.gamma_peak = gamma_peaks
-
-        # Возвращаем списки частот и гамм поглощения
-        return frequency_peaks, gamma_peaks
+    def find_intervals_after_processing2(self):
+        samples = self.data["frequency"][self.data.bool_result]
+        self.point_absorption_after_correlation=samples[
+            samples.index.isin(self.point_absorption_after_correlation.index)]

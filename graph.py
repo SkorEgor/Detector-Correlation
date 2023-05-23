@@ -36,4 +36,14 @@ class Graph:
         self.toolbar = NavigationToolbar(self.canvas, self.widget, coordinates=True)
         self.layout_toolbar.addWidget(self.toolbar)
 
+    # Приближает указанную область
+    def zoom_area(self, x_min, x_max, y_min, y_max):
+        # На графике задаем область
+        self.toolbar.push_current()  # Сохранить текущий статус zoom как домашний
+
+        self.axis.set_xlim([x_min, x_max])
+        self.axis.set_ylim([y_min, y_max])
+
+        # Перерисовываем
+        self.canvas.draw()
 

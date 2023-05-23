@@ -608,9 +608,12 @@ class GuiProgram(Ui_Dialog):
         self.data_signals.find_intervals_after_correlation()
         self.data_signals.find_point_after_correlation()
 
+        self.data_signals.find_intervals_after_processing()
+
         # Отрисовка
         self.update_graphics()
         self.table()
+
         # # Запрос порогового значения
         # threshold = float(self.lineEdit_threshold.text())
         #
@@ -658,16 +661,23 @@ class GuiProgram(Ui_Dialog):
         self.tableWidget_frequency_absorption.setHorizontalHeaderLabels(["Частота МГц", "Гамма"])
 
         # Устанавливаем начальное состояние иконки таблицы
-        self.icon_now = 'selected'
-        self.tableWidget_frequency_absorption.horizontalHeaderItem(2).setIcon(
-            QIcon('./resource/table_checkbox/var2_color_image/yes_green_24dp.png')
-        )
+        # Если все элементы True - то всё выбрано
+        if self.data_signals.point_absorption_after_correlation["status"].all():
+            self.icon_now = 'selected'
+        # Хотя бы один True - смешанный вариант
+        elif self.data_signals.point_absorption_after_correlation["status"].any():
+            self.icon_now = 'mixed'
+        else:
+            self.icon_now = 'empty'
+        self.update_table_icon(self.icon_now)
 
         # Заполняем таблицу
         index = 0
-        for f, g in zip(
+        count_check = 0
+        for f, g, status in zip(
                 self.data_signals.point_absorption_after_correlation["frequency"],
-                self.data_signals.point_absorption_after_correlation["gamma"]
+                self.data_signals.point_absorption_after_correlation["gamma"],
+                self.data_signals.point_absorption_after_correlation["status"]
         ):
             # значения частоты и гаммы для 0 и 1 столбца
             self.tableWidget_frequency_absorption.setItem(index, 0, QTableWidgetItem(str('%.3f' % f)))
@@ -675,7 +685,11 @@ class GuiProgram(Ui_Dialog):
 
             # Элемент 2 столбца - checkbox, сохранения данных
             check_box = QtWidgets.QCheckBox()  # Создаем объект чекбокс
-            check_box.setCheckState(Qt.Checked)  # Задаем состояние - нажат
+            if status:
+                check_box.setCheckState(Qt.Checked)  # Задаем состояние - нажат
+                count_check += 1
+            else:
+                check_box.setCheckState(Qt.Unchecked)  # Задаем состояние - нажат
             # Обработчик нажатия, с передачей отправителя
             check_box.toggled.connect(
                 functools.partial(
@@ -689,9 +703,13 @@ class GuiProgram(Ui_Dialog):
         # Размеры строк выровнять под содержимое
         self.tableWidget_frequency_absorption.resizeColumnsToContents()
         # Начальные данные для статистики
-        self.total_rows = self.data_signals.point_absorption_after_correlation[
-            self.data_signals.point_absorption_after_correlation.columns[0]].count()
-        self.selected_rows = self.total_rows
+        # Всего строк
+        # Альтернатива self.data_signals.point_absorption_after_correlation[
+        #             self.data_signals.point_absorption_after_correlation.columns[0]].count()
+        self.total_rows = index
+        # Выбранных строк
+        # Альтернатива self.data_signals.point_absorption_after_correlation["status"].value_counts()[True]
+        self.selected_rows = count_check
         self.frequency_selection()
 
     # Выбран check box таблицы, обновляем статистику под таблицей
@@ -745,17 +763,13 @@ class GuiProgram(Ui_Dialog):
         self.radioButton_data_graph_1.setChecked(Qt.CheckState.Checked)  # Включаем кнопку
         self.update_graphics_1.radio_button_updated(self.radioButton_data_graph_1)  # Обновляем график
 
-        # На графике задаем область
-        self.graph_1.axis.set_xlim([frequency_start, frequency_end])
-
-        self.graph_1.axis.set_ylim(
-            bottom=self.data_signals.data["with_gas"][
+        self.graph_1.zoom_area(
+            x_min=frequency_start,
+            x_max=frequency_end,
+            y_min=self.data_signals.data["with_gas"][
                 self.data_signals.data["frequency"].between(frequency_start, frequency_end)].min(),
-            top=self.data_signals.point_absorption_after_correlation["gamma"].iloc[row] * 1.2
+            y_max=self.data_signals.point_absorption_after_correlation["gamma"].iloc[row] * 1.2
         )
-
-        # Перерисовываем
-        self.graph_1.canvas.draw()
 
     # Кнопка сохранения таблицы
     def saving_data(self):

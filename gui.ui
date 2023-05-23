@@ -415,7 +415,7 @@ QTableCornerButton::section {background-color: rgb(33, 37, 43); }
             <property name="geometry">
              <rect>
               <x>0</x>
-              <y>0</y>
+              <y>-320</y>
               <width>206</width>
               <height>890</height>
              </rect>
@@ -2493,7 +2493,7 @@ background-image: url(:/update/resource/update/update2_white_18dp.svg);
                          <string notr="true"/>
                         </property>
                         <property name="text">
-                         <string notr="true">5</string>
+                         <string notr="true">20</string>
                         </property>
                         <property name="maxLength">
                          <number>10</number>
