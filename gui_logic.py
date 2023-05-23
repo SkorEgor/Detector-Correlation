@@ -3,6 +3,7 @@ from gui import Ui_Dialog
 from data_and_processing import DataAndProcessing
 from graph import Graph
 from drawer import Drawer as drawer
+from update_graphics import UpdateGraphics
 
 import functools
 
@@ -14,7 +15,10 @@ from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtGui import QIcon
 
 import matplotlib
+
 matplotlib.use('TkAgg')
+import time
+from PyQt5.QtCore import QTimer
 
 
 # ПАРСЕРЫ ДАННЫХ
@@ -206,7 +210,6 @@ class GuiProgram(Ui_Dialog):
             widget=self.widget_plot_1,
             layout_toolbar=self.layout_toolbar_1
         )
-        self.graph_1.initialize()
 
         # Параметры 2 графика
         self.graph_2 = Graph(
@@ -214,7 +217,28 @@ class GuiProgram(Ui_Dialog):
             widget=self.widget_plot_2,
             layout_toolbar=self.layout_toolbar_2
         )
-        self.graph_2.initialize()
+
+        # Синхронизация отображения данных на 1 графике
+        self.update_graphics_1 = UpdateGraphics(
+            graph=self.graph_1,
+            data=self.data_signals,
+            radio_button_data=self.radioButton_data_graph_1,
+            radio_button_correlation=self.radioButton_correlation_graph_1,
+            radio_button_sigma=self.radioButton_sigma_grapgh_1,
+            radio_button_noise=self.radioButton_noise_graph_1,
+            radio_button_width=self.radioButton_width_graph_1,
+        )
+
+        # Синхронизация отображения данных на 1 графике
+        self.update_graphics_2 = UpdateGraphics(
+            graph=self.graph_2,
+            data=self.data_signals,
+            radio_button_data=self.radioButton_data_graph_2,
+            radio_button_correlation=self.radioButton_correlation_graph_2,
+            radio_button_sigma=self.radioButton_sigma_grapgh_2,
+            radio_button_noise=self.radioButton_noise_graph_2,
+            radio_button_width=self.radioButton_width_graph_2,
+        )
 
         # Обработчики нажатий - кнопок порядка работы
         self.pushButton_reading_file_no_gas.clicked.connect(self.plotting_without_noise)  # Загрузить данные с вакуума
@@ -240,9 +264,13 @@ class GuiProgram(Ui_Dialog):
         self.initialize_table()  # Инициализация пустой таблицы с заголовками
         self.pushButton_save_table_to_file.clicked.connect(self.saving_data)  # Сохранить данные из таблицы в файл
         self.tableWidget_frequency_absorption.cellClicked.connect(self.get_clicked_cell)  # Выбрана строка таблицы
-        self.lineEdit_window_width.textEdited.connect(self.check_window_width)  # Обновился текст ширины окна просмотра
+        self.lineEdit_window_width.textEdited.connect(
+            lambda: self.check_window_width(False))  # Обновился текст ширины окна просмотра
         # Выбран заголовок таблицы
         self.tableWidget_frequency_absorption.horizontalHeader().sectionClicked.connect(self.click_handler)
+
+        # Отрисовка (Задержка учета расчета геометрии окна)
+        QTimer.singleShot(100, self.update_graphics)
 
     # Инициализация: Пустая таблица
     def initialize_table(self):
@@ -358,20 +386,20 @@ class GuiProgram(Ui_Dialog):
             message=message
         )
 
-    # Ширина окна просмотра
-    def check_window_width(self):
+    # (*) Ширина окна просмотра
+    def check_window_width(self, message=False):
         return check(
             line_edit=self.lineEdit_window_width,
             check_function=check_float_and_positive,
             check_box=self.checkBox_status_window_width,
             field_name="Ширина окна просмотра",
-            message=False
+            message=message
         )
 
-    # (*) Корректность всех данных обработки
+    # (ALL) Корректность всех данных обработки
     def checking_all_processing_parameters(self, message=False):
         return (
-                # (1) ДАННЫЕ
+            # (1) ДАННЫЕ
                 self.check_data_without_gas() and
                 self.check_data_with_gas() and
                 # (2) Корреляция
@@ -462,7 +490,7 @@ class GuiProgram(Ui_Dialog):
         ####################################################
 
         # Отрисовка
-        drawer.updating_gas_graph(graph=self.graph_1, data_signals=self.data_signals)
+        self.update_graphics()
 
     # Основная программа - (2) Чтение и построение полезного сигнала
     def signal_plotting(self, skip_read=False):
@@ -535,7 +563,7 @@ class GuiProgram(Ui_Dialog):
         ####################################################
 
         # Отрисовка
-        drawer.updating_gas_graph(graph=self.graph_1, data_signals=self.data_signals)
+        self.update_graphics()
 
     # Основная программа - (3) Расчет разницы, порога, интервалов, частот поглощения, отображение на графиках
     def processing(self):
@@ -555,22 +583,11 @@ class GuiProgram(Ui_Dialog):
         # Расчет значения порога корреляции
         correlation_threshold = float(self.lineEdit_threshold_correlation.text()) / 100
         self.data_signals.correlation_threshold = correlation_threshold  # Запоминаем порог, для построения разности
-        # Частоты начала и конца
-        half_window_width = correlation_window_width // 2
-        data_frequency_star = self.data_signals.data["frequency"].iloc[half_window_width]
-        data_frequency_end = self.data_signals.data["frequency"].iloc[-half_window_width]
-        # Данные о линии порога
-        correlation_threshold_signal = pd.Series([correlation_threshold] * 2,
-                                                 index=[data_frequency_star, data_frequency_end])
-        # Отрисовка графика
-        # self.updating_correlation_graph(correlation_threshold_signal)  #ОТРИСОВКА
 
         # (2.1) СГЛАЖИВАНИЕ -> СИГМА
         # Сглаживание
         smooth_window_width = int(self.lineEdit_smoothing.text())
         self.data_signals.smoothing_data_without_gas(smooth_window_width)
-
-        # self.updating_smoothing_graph()  #ОТРИСОВКА
 
         # Сигма
         sigma_window_width = int(self.lineEdit_smoothing_sigma_window_width.text())
@@ -579,10 +596,7 @@ class GuiProgram(Ui_Dialog):
         # (2.2) СРАВНЕНИЕ
         # сигмы и разницы
         sigma_multiplier = float(self.lineEdit_sigma_multiplier.text())
-        print(sigma_multiplier)
         self.data_signals.remove_below_sigma(sigma_multiplier)
-
-        # self.updating_sigma_and_difference_graph()  #ОТРИСОВКА
 
         # (3) Ширина участка
         # Запрашиваем параметры
@@ -591,7 +605,12 @@ class GuiProgram(Ui_Dialog):
 
         self.data_signals.width_filter(erosion, dilation)
 
-        drawer.updating_width_filter_graph(graph=self.graph_2, data_signals=self.data_signals)
+        self.data_signals.find_intervals_after_correlation()
+        self.data_signals.find_point_after_correlation()
+
+        # Отрисовка
+        self.update_graphics()
+        self.table()
         # # Запрос порогового значения
         # threshold = float(self.lineEdit_threshold.text())
         #
@@ -625,8 +644,14 @@ class GuiProgram(Ui_Dialog):
     # РАБОТА С ТАБЛИЦЕЙ
     # Основная программа - (4) Заполение таблицы
     def table(self):
+        # Нет точек поглощения - сброс
+        if self.data_signals.point_absorption_after_correlation.empty:
+            return
+
         # Задаем кол-во столбцов и строк
-        self.tableWidget_frequency_absorption.setRowCount(len(self.data_signals.frequency_peak))
+        self.tableWidget_frequency_absorption.setRowCount(
+            self.data_signals.point_absorption_after_correlation[
+                self.data_signals.point_absorption_after_correlation.columns[0]].count())
         self.tableWidget_frequency_absorption.setColumnCount(3)
 
         # Задаем название столбцов
@@ -637,9 +662,13 @@ class GuiProgram(Ui_Dialog):
         self.tableWidget_frequency_absorption.horizontalHeaderItem(2).setIcon(
             QIcon('./resource/table_checkbox/var2_color_image/yes_green_24dp.png')
         )
+
         # Заполняем таблицу
         index = 0
-        for f, g in zip(self.data_signals.frequency_peak, self.data_signals.gamma_peak):
+        for f, g in zip(
+                self.data_signals.point_absorption_after_correlation["frequency"],
+                self.data_signals.point_absorption_after_correlation["gamma"]
+        ):
             # значения частоты и гаммы для 0 и 1 столбца
             self.tableWidget_frequency_absorption.setItem(index, 0, QTableWidgetItem(str('%.3f' % f)))
             self.tableWidget_frequency_absorption.setItem(index, 1, QTableWidgetItem(str('%.7E' % g)))
@@ -660,7 +689,8 @@ class GuiProgram(Ui_Dialog):
         # Размеры строк выровнять под содержимое
         self.tableWidget_frequency_absorption.resizeColumnsToContents()
         # Начальные данные для статистики
-        self.total_rows = len(self.data_signals.frequency_peak)
+        self.total_rows = self.data_signals.point_absorption_after_correlation[
+            self.data_signals.point_absorption_after_correlation.columns[0]].count()
         self.selected_rows = self.total_rows
         self.frequency_selection()
 
@@ -694,41 +724,49 @@ class GuiProgram(Ui_Dialog):
 
     # Выбрана строка таблицы
     def get_clicked_cell(self, row):
-        # Запрашиваем из окна, значение порога
-        window_width = self.lineEdit_window_width.text()
-
-        # Проверка на цифры и положительность
-        if not self.check_window_width():
+        # Проверка на корректность ширины окна просмотра
+        if not self.check_window_width(True):
             return
 
+        # Запрашиваем ширину окна просмотра
+        window_width = self.lineEdit_window_width.text()
         window_width = float(window_width)
 
         frequency_left_or_right = window_width / 2
-        # Приближаем область с выделенной частотой
-        frequency_start = self.data_signals.frequency_peak[row] - frequency_left_or_right
-        frequency_end = self.data_signals.frequency_peak[row] + frequency_left_or_right
 
-        # self.ax1.set_xlim([frequency_start, frequency_end])
-        #
-        # self.ax1.set_ylim([
-        #     self.data_signals.data_with_gas[frequency_start:frequency_end].min(),
-        #     self.data_signals.gamma_peak[row] * 1.2
-        # ])
-        #
-        # # Перерисовываем
-        # self.canvas1.draw()
+        # Приближаем область с выделенной частотой
+        # находим границы области
+        frequency_peak = self.data_signals.point_absorption_after_correlation["frequency"].iloc[row]
+
+        frequency_start = frequency_peak - frequency_left_or_right
+        frequency_end = frequency_peak + frequency_left_or_right
+
+        # Включаем верхний график, в режим данных
+        self.radioButton_data_graph_1.setChecked(Qt.CheckState.Checked)  # Включаем кнопку
+        self.update_graphics_1.radio_button_updated(self.radioButton_data_graph_1)  # Обновляем график
+
+        # На графике задаем область
+        self.graph_1.axis.set_xlim([frequency_start, frequency_end])
+
+        self.graph_1.axis.set_ylim(
+            bottom=self.data_signals.data["with_gas"][
+                self.data_signals.data["frequency"].between(frequency_start, frequency_end)].min(),
+            top=self.data_signals.point_absorption_after_correlation["gamma"].iloc[row] * 1.2
+        )
+
+        # Перерисовываем
+        self.graph_1.canvas.draw()
 
     # Кнопка сохранения таблицы
     def saving_data(self):
         # Проверка, что данные для сохранения есть
-        if not self.data_signals.frequency_peak or not self.data_signals.gamma_peak:
+        if self.data_signals.point_absorption_after_correlation.empty:
             QMessageBox.warning(None, "Ошибка данных", "Нет данных для сохранения.")
             return
 
         # Рек-мое название файла
-        recommended_file_name = f'F{self.data_signals.data_without_gas.index[0]}-' \
-                                f'{self.data_signals.data_without_gas.index[-1]}'  # \
-        # f'_threshold-{self.lineEdit_threshold.text()}'
+        recommended_file_name = f'F{self.data_signals.data["frequency"].iloc[0]}-' \
+                                f'{self.data_signals.data["frequency"].iloc[-1]}_correlate'
 
         # Окно с выбором места сохранения
         file_name, file_type = QFileDialog.getSaveFileName(
@@ -804,3 +842,8 @@ class GuiProgram(Ui_Dialog):
         self.tableWidget_frequency_absorption.horizontalHeaderItem(2).setIcon(
             update_icon  # Вставляем новую иконку
         )
+
+    # Обновить графики
+    def update_graphics(self):
+        self.update_graphics_1.update_graph()
+        self.update_graphics_2.update_graph()

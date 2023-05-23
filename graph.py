@@ -17,8 +17,9 @@ class Graph:
             self.layout_toolbar = layout
         else:
             self.layout_toolbar = layout_toolbar
+        self.initialize()
 
-    def initialize(self):
+    def initialize(self, draw=False):
         # Инициализирует фигуру matplotlib внутри контейнера GUI.
         # Вызываем только один раз при инициализации
 
@@ -28,7 +29,11 @@ class Graph:
         # Создание холста
         self.canvas = FigureCanvas(self.figure)
         self.layout.addWidget(self.canvas)
-        self.canvas.draw()
+        if draw:
+            self.canvas.draw()
+
         # Создание Toolbar
         self.toolbar = NavigationToolbar(self.canvas, self.widget, coordinates=True)
         self.layout_toolbar.addWidget(self.toolbar)
+
+

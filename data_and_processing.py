@@ -31,11 +31,16 @@ class DataAndProcessing:
             "difference",  # Разница сигналов
             "bool_difference",  # Логический массив, разница данных выше сигмы
             "bool_result",  # Логический массив, после обработки на ширину
+            "intervals_after_correlation",  # Интервалы поглощения после корреляции
+            "end_intervals"  # Интервалы после всех обработок
         ]
         self.data = pd.DataFrame(columns=self.names_data + self.names_processing)
 
         # Пороговое значение для корреляции
         self.correlation_threshold = None
+
+        # Точки линий поглощения, от корреляции (строчки: индекс и гамма)
+        self.point_absorption_after_correlation = pd.DataFrame()
 
         # Без шума
         self.data_without_gas = pd.Series()
@@ -72,10 +77,12 @@ class DataAndProcessing:
     # (*) Чистит данные процесса обработки
     def clear_data_processing(self):
         self.data[self.names_processing] = np.nan
+        self.correlation_threshold = None
 
     # (*) Чистит все данные (альтернатива:  self.data = self.data.head(0))
     def clear_data(self):
         self.data = self.data.head(0)
+        self.correlation_threshold = None
 
     # ОБРАБОТКА (1): Считаем корреляцию между данными
     def correlate(self, window_width):
@@ -89,8 +96,18 @@ class DataAndProcessing:
 
         # Считаем корреляцию окном с корреляцией, результирующее значение в середину окна
         self.data["correlate"] = (self.data["without_gas"]) \
-            .rolling(window_width, center=True) \
+            .rolling(window_width) \
             .corr(self.data["with_gas"])
+        # ПО СМЫСЛУ ДОЛЖЕН БЫТЬ СДВИГ!!! .shift(periods=-window_width//2)
+        # или .rolling(window_width, center=True)
+
+    # ОБРАБОТКА (1.1):Возвращаем серию "порогового значения корреляции" для построения
+    def data_correlation_threshold(self):
+        data_frequency_star = self.data["correlate"].first_valid_index()
+        data_frequency_end = self.data["correlate"].last_valid_index()
+        return pd.Series([self.correlation_threshold] * 2,
+                         index=[self.data["frequency"][data_frequency_star],
+                                self.data["frequency"][data_frequency_end]])
 
     # ОБРАБОТКА (2): Шум
     # (2.1): Сглаживание данных без вещества
@@ -147,7 +164,64 @@ class DataAndProcessing:
         for i in range(dilation):
             self.data["bool_result"] = ndimage.binary_dilation(self.data["bool_result"])
 
-    # ОБРАБОТКА (*): поиск индекс-значение линий поглощения, в данных выше порога
+    # ОБРАБОТКА (*): ИНТЕРВАЛЫ И ТОЧКИ ЛИНИЙ ПОГЛОЩЕНИЯ
+    # ОБЩИЕ МЕТОДЫ
+    # (1) ИНТЕРВАЛА ПОГЛОЩЕНИЯ
+    # Поиск участков выше порога -> получение индексов начала и конца интервала
+    # ---------------------------------------------------------------------
+    # В формате индекс: начало интервала; значение: конец интервала. Пример, при пороге 4:
+    # ind: 0 1 2 3 4 5 6 7 8 9 10-> ind: 1 5 9 -> (пары: с 1 по 2; с 5-6; с 9 по 9)
+    # val: 1 5 8 1 3 9 8 1 0 8 0 -> val: 2 6 9
+    @staticmethod
+    def find_intervals(samples, threshold):
+        bool_samples = samples[samples >= threshold]
+        xx = bool_samples.groupby((bool_samples.index != bool_samples.index.to_series().shift() + 1)
+                                  .cumsum()).apply(lambda grp: (grp.index[0], grp.index[-1]))
+        return pd.Series(xx.str[1].values, index=xx.str[0])
+
+    # (2) ТОЧКИ ПОГЛОЩЕНИЯ
+    # (2.1) Поиск участков выше порога -> на участке применяем функцию поиск ТОЧКИ ПОГЛОЩЕНИЯ
+    # ---------------------------------------------------------------------
+    # В формате индекс: начало интервала; значение: конец интервала. Пример, при пороге 4:
+    # ind: 0 1 2 3 4 5 6 7 8 9 10-> ind: 2 5 9 -> (в интервале от 1-2: 1 мах 8;...)
+    # val: 1 5 8 1 3 9 8 1 0 8 0 -> val: 8 9 8
+    # Пример samples: bool_samples = samples[samples >= threshold] - массив индексов и значений
+    # без пар индексов не подходящих под условие
+    @staticmethod
+    def find_point(samples):
+        xx = samples.groupby((samples.index != samples.index.to_series().shift() + 1)
+                             .cumsum()).apply(lambda grp: (DataAndProcessing.max_index_val(grp)))
+        return pd.Series(xx.str[1].values, index=xx.str[0].values)
+
+    # (2.2) Метод поиска линии поглощения на участке
+    @staticmethod
+    def max_index_val(mass):
+        index = mass.idxmax()
+        val = mass[index]
+        return index, val
+
+    # ОБРАБОТКА (*): ИНТЕРВАЛЫ И ТОЧКИ ЛИНИЙ ПОГЛОЩЕНИЯ
+    # АЛГОРИТМ
+    # (1) Интервалы линий поглощение после корреляции
+    def find_intervals_after_correlation(self):
+        # нет данных - сброс
+        if self.correlation_threshold is None:
+            return
+
+        # Все что выше порога, приобретает значение корреляции
+        self.data.loc[
+            self.data["correlate"] <= self.correlation_threshold, "intervals_after_correlation"] = self.data["with_gas"]
+
+    # (2) Точки линий поглощения, от корреляции (строчки: индекс и гамма)
+    def find_point_after_correlation(self):
+        self.point_absorption_after_correlation = pd.DataFrame({
+            "gamma": DataAndProcessing.find_point(
+                self.data["with_gas"][  # В качестве значений - гамма с веществом
+                    self.data["correlate"] <= self.correlation_threshold  # Оставляем элементы ниже порога
+                    ]
+            )})
+        self.point_absorption_after_correlation["frequency"] = \
+            self.data["frequency"][self.point_absorption_after_correlation.index]
 
     # Находит интервалы индексов, значения которых выше порога
     def calculation_frequency_indexes_above_threshold(self, threshold_value):

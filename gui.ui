@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Детектирование сигнала - метод Разности</string>
+   <string>Детектирование сигнала - метод Корреляции</string>
   </property>
   <property name="windowIcon">
    <iconset resource="res.qrc">
@@ -1694,7 +1694,7 @@ background-image: url(:/update/resource/update/update2_white_18dp.svg);
                          <string notr="true"/>
                         </property>
                         <property name="text">
-                         <string notr="true">30</string>
+                         <string notr="true">25</string>
                         </property>
                         <property name="maxLength">
                          <number>10</number>
@@ -3757,26 +3757,26 @@ QPushButton:pressed      {
                 <number>0</number>
                </property>
                <item>
-                <widget class="QWidget" name="widget_select_graphic" native="true">
+                <widget class="QWidget" name="widget_select_graphic_1" native="true">
                  <property name="styleSheet">
                   <string notr="true">.QWidget{
 	border: none;												/* без границ */
 
-	border-right:2px solid rgb(33, 37, 43);	/* С правой красной раницей */
+	border-right:2px solid rgb(211, 211, 211);;	/* С правой красной раницей */
 }</string>
                  </property>
-                 <layout class="QHBoxLayout" name="layout_select_graphic">
+                 <layout class="QHBoxLayout" name="layout_select_graphic_1">
                   <property name="spacing">
-                   <number>0</number>
+                   <number>5</number>
                   </property>
                   <property name="leftMargin">
-                   <number>0</number>
+                   <number>5</number>
                   </property>
                   <property name="topMargin">
                    <number>0</number>
                   </property>
                   <property name="rightMargin">
-                   <number>5</number>
+                   <number>10</number>
                   </property>
                   <property name="bottomMargin">
                    <number>0</number>
@@ -3805,7 +3805,9 @@ QPushButton:pressed      {
                      <string notr="true">/* /////////////////////////////////////////////////////////////////////////////////////////////////
 RadioButton */
 QRadioButton::indicator {
-image: url(:/menu_black/resource/menu_titles_black/menu_data_black_36dp.svg);
+
+	image: url(:/menu_black/resource/menu_titles_black/menu_data_black_36dp.svg);
+
 	background-color: rgb(240, 240, 240);
     border:none;
 	border-radius: 0px;
@@ -3844,7 +3846,7 @@ QRadioButton::indicator:checked {
                      </size>
                     </property>
                     <property name="checked">
-                     <bool>false</bool>
+                     <bool>true</bool>
                     </property>
                     <property name="autoRepeat">
                      <bool>false</bool>
@@ -4125,7 +4127,7 @@ QRadioButton::indicator:checked {
                      </size>
                     </property>
                     <property name="checked">
-                     <bool>true</bool>
+                     <bool>false</bool>
                     </property>
                     <property name="autoRepeat">
                      <bool>false</bool>
@@ -4224,183 +4226,384 @@ QPushButton:pressed      {
                 <number>0</number>
                </property>
                <item>
-                <widget class="QPushButton" name="pushButton_data_graph_2">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="minimumSize">
-                  <size>
-                   <width>33</width>
-                   <height>33</height>
-                  </size>
-                 </property>
-                 <property name="maximumSize">
-                  <size>
-                   <width>33</width>
-                   <height>33</height>
-                  </size>
-                 </property>
-                 <property name="text">
-                  <string/>
-                 </property>
-                 <property name="icon">
-                  <iconset resource="res.qrc">
-                   <normaloff>:/menu_black/resource/menu_titles_black/menu_data_black_36dp.svg</normaloff>:/menu_black/resource/menu_titles_black/menu_data_black_36dp.svg</iconset>
-                 </property>
-                 <property name="iconSize">
-                  <size>
-                   <width>25</width>
-                   <height>25</height>
-                  </size>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QPushButton" name="pushButton_correlation_graph_2">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="minimumSize">
-                  <size>
-                   <width>33</width>
-                   <height>33</height>
-                  </size>
-                 </property>
-                 <property name="maximumSize">
-                  <size>
-                   <width>33</width>
-                   <height>33</height>
-                  </size>
-                 </property>
-                 <property name="text">
-                  <string/>
-                 </property>
-                 <property name="icon">
-                  <iconset resource="res.qrc">
-                   <normaloff>:/menu_black/resource/menu_titles_black/menu_correlation_black_36dp.svg</normaloff>:/menu_black/resource/menu_titles_black/menu_correlation_black_36dp.svg</iconset>
-                 </property>
-                 <property name="iconSize">
-                  <size>
-                   <width>25</width>
-                   <height>25</height>
-                  </size>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QPushButton" name="pushButton_sigma_grapgh_2">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="minimumSize">
-                  <size>
-                   <width>33</width>
-                   <height>33</height>
-                  </size>
-                 </property>
-                 <property name="maximumSize">
-                  <size>
-                   <width>33</width>
-                   <height>33</height>
-                  </size>
-                 </property>
-                 <property name="font">
-                  <font>
-                   <pointsize>-1</pointsize>
-                  </font>
-                 </property>
+                <widget class="QWidget" name="widget_select_graphic_2" native="true">
                  <property name="styleSheet">
-                  <string notr="true">font-size: 24px;
-text-align:top;</string>
+                  <string notr="true">.QWidget{
+	border: none;												/* без границ */
+
+	border-right:2px solid rgb(211, 211, 211);;	/* С правой красной раницей */
+}</string>
                  </property>
-                 <property name="text">
-                  <string notr="true">σ</string>
-                 </property>
-                 <property name="iconSize">
-                  <size>
-                   <width>33</width>
-                   <height>33</height>
-                  </size>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QPushButton" name="pushButton_noise_graph_2">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="minimumSize">
-                  <size>
-                   <width>33</width>
-                   <height>33</height>
-                  </size>
-                 </property>
-                 <property name="maximumSize">
-                  <size>
-                   <width>33</width>
-                   <height>33</height>
-                  </size>
-                 </property>
-                 <property name="text">
-                  <string/>
-                 </property>
-                 <property name="icon">
-                  <iconset resource="res.qrc">
-                   <normaloff>:/menu_black/resource/menu_titles_black/menu_noise_black_36dp.svg</normaloff>:/menu_black/resource/menu_titles_black/menu_noise_black_36dp.svg</iconset>
-                 </property>
-                 <property name="iconSize">
-                  <size>
-                   <width>25</width>
-                   <height>25</height>
-                  </size>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QPushButton" name="pushButton_width_graph_2">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="minimumSize">
-                  <size>
-                   <width>33</width>
-                   <height>33</height>
-                  </size>
-                 </property>
-                 <property name="maximumSize">
-                  <size>
-                   <width>33</width>
-                   <height>33</height>
-                  </size>
-                 </property>
-                 <property name="text">
-                  <string/>
-                 </property>
-                 <property name="icon">
-                  <iconset resource="res.qrc">
-                   <normaloff>:/menu_black/resource/menu_titles_black/menu_width_black_36dp.svg</normaloff>:/menu_black/resource/menu_titles_black/menu_width_black_36dp.svg</iconset>
-                 </property>
-                 <property name="iconSize">
-                  <size>
-                   <width>25</width>
-                   <height>25</height>
-                  </size>
-                 </property>
+                 <layout class="QHBoxLayout" name="layout_select_graphic_2">
+                  <property name="spacing">
+                   <number>5</number>
+                  </property>
+                  <property name="leftMargin">
+                   <number>5</number>
+                  </property>
+                  <property name="topMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="rightMargin">
+                   <number>10</number>
+                  </property>
+                  <property name="bottomMargin">
+                   <number>0</number>
+                  </property>
+                  <item>
+                   <widget class="QRadioButton" name="radioButton_data_graph_2">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
+                    <property name="minimumSize">
+                     <size>
+                      <width>33</width>
+                      <height>33</height>
+                     </size>
+                    </property>
+                    <property name="maximumSize">
+                     <size>
+                      <width>33</width>
+                      <height>33</height>
+                     </size>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true">/* /////////////////////////////////////////////////////////////////////////////////////////////////
+RadioButton */
+QRadioButton::indicator {
+
+	image: url(:/menu_black/resource/menu_titles_black/menu_data_black_36dp.svg);
+
+	background-color: rgb(240, 240, 240);
+    border:none;
+	border-radius: 0px;
+	width: 31px;
+	height: 31px;
+}
+QRadioButton::indicator:hover {
+	border: none;												/* без границ */
+
+	border-right:1px solid rgb(160, 160, 160);	/* С правой красной раницей */
+	border-bottom:1px solid rgb(160, 160, 160);
+
+	border-left:1px solid rgb(255, 255, 255);	/* С правой красной раницей */
+	border-top:1px solid rgb(255, 255, 255);
+}
+QRadioButton::indicator:checked {
+	border: none;												/* без границ */
+
+	border-left:1px solid rgb(160, 160, 160);	/* С правой красной раницей */
+	border-top:1px solid rgb(160, 160, 160);
+
+	border-right:1px solid rgb(255, 255, 255);	/* С правой красной раницей */
+	border-bottom:1px solid rgb(255, 255, 255);
+
+}
+
+/* ///////////////////////////////////////////////////////////////////////////////////////////////// */</string>
+                    </property>
+                    <property name="text">
+                     <string/>
+                    </property>
+                    <property name="iconSize">
+                     <size>
+                      <width>20</width>
+                      <height>20</height>
+                     </size>
+                    </property>
+                    <property name="checked">
+                     <bool>false</bool>
+                    </property>
+                    <property name="autoRepeat">
+                     <bool>false</bool>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QRadioButton" name="radioButton_correlation_graph_2">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
+                    <property name="minimumSize">
+                     <size>
+                      <width>33</width>
+                      <height>33</height>
+                     </size>
+                    </property>
+                    <property name="maximumSize">
+                     <size>
+                      <width>33</width>
+                      <height>33</height>
+                     </size>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true">/* /////////////////////////////////////////////////////////////////////////////////////////////////
+RadioButton */
+QRadioButton::indicator {
+	image: url(:/menu_black/resource/menu_titles_black/menu_correlation_black_36dp.svg);
+	background-color: rgb(240, 240, 240);
+    border:none;
+	border-radius: 0px;
+	width: 31px;
+	height: 31px;
+}
+QRadioButton::indicator:hover {
+	border: none;												/* без границ */
+
+	border-right:1px solid rgb(160, 160, 160);	/* С правой красной раницей */
+	border-bottom:1px solid rgb(160, 160, 160);
+
+	border-left:1px solid rgb(255, 255, 255);	/* С правой красной раницей */
+	border-top:1px solid rgb(255, 255, 255);
+}
+QRadioButton::indicator:checked {
+	border: none;												/* без границ */
+
+	border-left:1px solid rgb(160, 160, 160);	/* С правой красной раницей */
+	border-top:1px solid rgb(160, 160, 160);
+
+	border-right:1px solid rgb(255, 255, 255);	/* С правой красной раницей */
+	border-bottom:1px solid rgb(255, 255, 255);
+
+}
+
+/* ///////////////////////////////////////////////////////////////////////////////////////////////// */</string>
+                    </property>
+                    <property name="text">
+                     <string/>
+                    </property>
+                    <property name="iconSize">
+                     <size>
+                      <width>20</width>
+                      <height>20</height>
+                     </size>
+                    </property>
+                    <property name="checked">
+                     <bool>true</bool>
+                    </property>
+                    <property name="autoRepeat">
+                     <bool>false</bool>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QRadioButton" name="radioButton_sigma_grapgh_2">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
+                    <property name="minimumSize">
+                     <size>
+                      <width>33</width>
+                      <height>33</height>
+                     </size>
+                    </property>
+                    <property name="maximumSize">
+                     <size>
+                      <width>33</width>
+                      <height>33</height>
+                     </size>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true">/* /////////////////////////////////////////////////////////////////////////////////////////////////
+RadioButton */
+QRadioButton::indicator {
+	
+	image: url(:/menu_black/resource/menu_titles_black/sigma_black.svg);
+	background-color: rgb(240, 240, 240);
+    border:none;
+	border-radius: 0px;
+	width: 31px;
+	height: 31px;
+}
+QRadioButton::indicator:hover {
+	border: none;												/* без границ */
+
+	border-right:1px solid rgb(160, 160, 160);	/* С правой красной раницей */
+	border-bottom:1px solid rgb(160, 160, 160);
+
+	border-left:1px solid rgb(255, 255, 255);	/* С правой красной раницей */
+	border-top:1px solid rgb(255, 255, 255);
+}
+QRadioButton::indicator:checked {
+	border: none;												/* без границ */
+
+	border-left:1px solid rgb(160, 160, 160);	/* С правой красной раницей */
+	border-top:1px solid rgb(160, 160, 160);
+
+	border-right:1px solid rgb(255, 255, 255);	/* С правой красной раницей */
+	border-bottom:1px solid rgb(255, 255, 255);
+
+}
+
+/* ///////////////////////////////////////////////////////////////////////////////////////////////// */</string>
+                    </property>
+                    <property name="text">
+                     <string/>
+                    </property>
+                    <property name="iconSize">
+                     <size>
+                      <width>20</width>
+                      <height>20</height>
+                     </size>
+                    </property>
+                    <property name="checked">
+                     <bool>false</bool>
+                    </property>
+                    <property name="autoRepeat">
+                     <bool>false</bool>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QRadioButton" name="radioButton_noise_graph_2">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
+                    <property name="minimumSize">
+                     <size>
+                      <width>33</width>
+                      <height>33</height>
+                     </size>
+                    </property>
+                    <property name="maximumSize">
+                     <size>
+                      <width>33</width>
+                      <height>33</height>
+                     </size>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true">/* /////////////////////////////////////////////////////////////////////////////////////////////////
+RadioButton */
+QRadioButton::indicator {
+image: url(:/menu_black/resource/menu_titles_black/menu_noise_black_36dp.svg);
+	background-color: rgb(240, 240, 240);
+    border:none;
+	border-radius: 0px;
+	width: 31px;
+	height: 31px;
+}
+QRadioButton::indicator:hover {
+	border: none;												/* без границ */
+
+	border-right:1px solid rgb(160, 160, 160);	/* С правой красной раницей */
+	border-bottom:1px solid rgb(160, 160, 160);
+
+	border-left:1px solid rgb(255, 255, 255);	/* С правой красной раницей */
+	border-top:1px solid rgb(255, 255, 255);
+}
+QRadioButton::indicator:checked {
+	border: none;												/* без границ */
+
+	border-left:1px solid rgb(160, 160, 160);	/* С правой красной раницей */
+	border-top:1px solid rgb(160, 160, 160);
+
+	border-right:1px solid rgb(255, 255, 255);	/* С правой красной раницей */
+	border-bottom:1px solid rgb(255, 255, 255);
+
+}
+
+/* ///////////////////////////////////////////////////////////////////////////////////////////////// */</string>
+                    </property>
+                    <property name="text">
+                     <string/>
+                    </property>
+                    <property name="iconSize">
+                     <size>
+                      <width>20</width>
+                      <height>20</height>
+                     </size>
+                    </property>
+                    <property name="checked">
+                     <bool>false</bool>
+                    </property>
+                    <property name="autoRepeat">
+                     <bool>false</bool>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QRadioButton" name="radioButton_width_graph_2">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
+                    <property name="minimumSize">
+                     <size>
+                      <width>33</width>
+                      <height>33</height>
+                     </size>
+                    </property>
+                    <property name="maximumSize">
+                     <size>
+                      <width>33</width>
+                      <height>33</height>
+                     </size>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true">/* /////////////////////////////////////////////////////////////////////////////////////////////////
+RadioButton */
+QRadioButton::indicator {
+image: url(:/menu_black/resource/menu_titles_black/menu_width_black_36dp.svg);
+	background-color: rgb(240, 240, 240);
+    border:none;
+	border-radius: 0px;
+	width: 31px;
+	height: 31px;
+}
+QRadioButton::indicator:hover {
+	border: none;												/* без границ */
+
+	border-right:1px solid rgb(160, 160, 160);	/* С правой красной раницей */
+	border-bottom:1px solid rgb(160, 160, 160);
+
+	border-left:1px solid rgb(255, 255, 255);	/* С правой красной раницей */
+	border-top:1px solid rgb(255, 255, 255);
+}
+QRadioButton::indicator:checked {
+	border: none;												/* без границ */
+
+	border-left:1px solid rgb(160, 160, 160);	/* С правой красной раницей */
+	border-top:1px solid rgb(160, 160, 160);
+
+	border-right:1px solid rgb(255, 255, 255);	/* С правой красной раницей */
+	border-bottom:1px solid rgb(255, 255, 255);
+
+}
+
+/* ///////////////////////////////////////////////////////////////////////////////////////////////// */</string>
+                    </property>
+                    <property name="text">
+                     <string/>
+                    </property>
+                    <property name="iconSize">
+                     <size>
+                      <width>20</width>
+                      <height>20</height>
+                     </size>
+                    </property>
+                    <property name="checked">
+                     <bool>false</bool>
+                    </property>
+                    <property name="autoRepeat">
+                     <bool>false</bool>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
                 </widget>
                </item>
               </layout>

@@ -16,15 +16,26 @@ def cleaning_and_chart_graph(graph: Graph, x_label, y_label, title):
 
 
 # Отрисовка (вызывается в конце)
-def draw_graph(graph: Graph):
+def draw_graph(graph: Graph, chart_caption: bool = True):
     # Рисуем сетку
     graph.axis.grid()
-    # Инициирует отображение названия графика и различных надписей на нем.
-    graph.axis.legend()
+    # Инициирует отображение названия графиков
+    if chart_caption:
+        graph.axis.legend()
     # Убеждаемся, что все помещается внутри холста
     graph.figure.tight_layout()
     # Показываем новую фигуру в интерфейсе
     graph.canvas.draw()
+
+
+# Отрисовка при - отсутствии данных
+def no_data(graph: Graph):
+    graph.axis.text(0.5, 0.5, "Нет данных",
+                    fontsize=14,
+                    horizontalalignment='center',
+                    verticalalignment='center')
+    # Отрисовка, без подписи данных
+    draw_graph(graph, chart_caption=False)
 
 
 class Drawer:
@@ -83,13 +94,8 @@ class Drawer:
     def updating_gas_graph(
             graph: Graph,
             data_signals: DataAndProcessing,
-            list_absorbing=None
     ):
-        # Данных нет - сброс
-        if data_signals.data["without_gas"].empty and data_signals.data["with_gas"].empty and list_absorbing:
-            return
-
-        # Очистка и подпись графика (вызывается в начале)
+        # Очистка, подпись графика и осей (вызывается в начале)
         cleaning_and_chart_graph(
             # Объект графика
             graph=graph,
@@ -98,6 +104,11 @@ class Drawer:
             # Подпись осей
             x_label=Drawer.horizontal_axis_name_data, y_label=Drawer.vertical_axis_name_data
         )
+
+        # Данных нет
+        if data_signals.data["without_gas"].empty and data_signals.data["with_gas"].empty:
+            no_data(graph)
+            return
 
         # Если есть данные без газа, строим график
         if not data_signals.data["without_gas"].empty:
@@ -111,16 +122,12 @@ class Drawer:
                 data_signals.data["frequency"],
                 data_signals.data["with_gas"],
                 color=Drawer.color_with_gas, label=Drawer.name_with_gas)
-        # Выделение промежутков
-        if list_absorbing:
-
+        # Если интервалы корреляции найдены, строим график
+        if not data_signals.data["intervals_after_correlation"].isnull().values.all():
             graph.axis.plot(
-                list_absorbing[0].index, list_absorbing[0].values,
-                color=Drawer.color_absorbing, label=Drawer.list_absorbing
-            )
-
-            for i in list_absorbing:
-                graph.axis.plot(i.index, i.values, color=Drawer.color_absorbing)
+                data_signals.data["frequency"],
+                data_signals.data["intervals_after_correlation"],
+                color=Drawer.color_absorbing, label=Drawer.list_absorbing)
 
         # Отрисовка (вызывается в конце)
         draw_graph(graph)
@@ -129,14 +136,9 @@ class Drawer:
     @staticmethod
     def updating_correlation_graph(
             graph: Graph,
-            data_signals: DataAndProcessing,
-            threshold=None
+            data_signals: DataAndProcessing
     ):
-        # Данных нет - сброс
-        if data_signals.data["correlate"].isnull().values.all() and not (threshold is None):
-            return
-
-        # Очистка и подпись графика (вызывается в начале)
+        # Очистка, подпись графика и осей (вызывается в начале)
         cleaning_and_chart_graph(
             # Объекты графика
             graph=graph,
@@ -146,6 +148,11 @@ class Drawer:
             x_label=Drawer.horizontal_axis_name_correlation, y_label=Drawer.vertical_axis_name_correlation
         )
 
+        # Данных нет
+        if data_signals.data["correlate"].isnull().values.all():
+            no_data(graph)
+            return
+
         # Если есть данные корреляции, строим график
         if not data_signals.data["correlate"].isnull().values.all():
             graph.axis.plot(
@@ -153,10 +160,12 @@ class Drawer:
                 data_signals.data["correlate"],
                 color=Drawer.color_correlation, label=Drawer.name_correlation)
         # Если есть порог, строим график
-        if not (threshold is None):
+        if not (data_signals.correlation_threshold is None):
+            # Высчитываем порог
+            threshold_data = data_signals.data_correlation_threshold()
             graph.axis.plot(
-                threshold.index,
-                threshold.values,
+                threshold_data.index,
+                threshold_data.values,
                 color=Drawer.color_threshold, label=Drawer.list_threshold)
 
         # Отрисовка (вызывается в конце)
@@ -168,12 +177,7 @@ class Drawer:
             graph: Graph,
             data_signals: DataAndProcessing
     ):
-        # Данных нет (не_пустые.значения.во_всех_строчках) - сброс ()
-        if (data_signals.data["smoothed_without_gas"].isnull().values.all() and
-                data_signals.data["without_gas"].isnull().values.all()):
-            return
-
-        # Очистка и подпись графика (вызывается в начале)
+        # Очистка, подпись графика и осей (вызывается в начале)
         cleaning_and_chart_graph(
             # Объекты графика
             graph=graph,
@@ -182,6 +186,11 @@ class Drawer:
             # Подпись осей
             x_label=Drawer.horizontal_axis_name_smoothing, y_label=Drawer.vertical_axis_name_smoothing
         )
+
+        # Данных нет (не_пустые.значения.во_всех_строчках)
+        if data_signals.data["smoothed_without_gas"].isnull().values.all():
+            no_data(graph)
+            return
 
         # График без вещества
         graph.axis.plot(
@@ -203,12 +212,7 @@ class Drawer:
             graph: Graph,
             data_signals: DataAndProcessing
     ):
-        # Данных нет (не_пустые.значения.во_всех_строчках) - сброс ()
-        if (data_signals.data["difference"].isnull().values.all() and
-                data_signals.data["sigma_with_multiplier"].isnull().values.all()):
-            return
-
-        # Очистка и подпись графика (вызывается в начале)
+        # Очистка, подпись графика и осей (вызывается в начале)
         cleaning_and_chart_graph(
             # Объекты графика
             graph=graph,
@@ -218,6 +222,12 @@ class Drawer:
             x_label=Drawer.horizontal_axis_name_sigma_and_difference,
             y_label=Drawer.vertical_axis_name_sigma_and_difference
         )
+
+        # Данных нет (не_пустые.значения.во_всех_строчках)
+        if (data_signals.data["difference"].isnull().values.all() and
+                data_signals.data["sigma_with_multiplier"].isnull().values.all()):
+            no_data(graph)
+            return
 
         # Разница
         graph.axis.plot(
@@ -239,11 +249,7 @@ class Drawer:
             graph: Graph,
             data_signals: DataAndProcessing,
     ):
-        # Данных нет (не_пустые.значения.во_всех_строчках) - сброс ()
-        if data_signals.data["bool_result"].isnull().values.all():
-            return
-
-        # Очистка и подпись графика (вызывается в начале)
+        # Очистка, подпись графика и осей (вызывается в начале)
         cleaning_and_chart_graph(
             # Объекты графика
             graph=graph,
@@ -253,6 +259,11 @@ class Drawer:
             x_label=Drawer.horizontal_axis_name_filter_by_area_width,
             y_label=Drawer.vertical_axis_name_filter_by_area_width
         )
+
+        # Данных нет (не_пустые.значения.во_всех_строчках)
+        if data_signals.data["bool_result"].isnull().values.all():
+            no_data(graph)
+            return
 
         # Разница
         graph.axis.plot(
