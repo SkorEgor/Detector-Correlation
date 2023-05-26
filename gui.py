@@ -25,6 +25,10 @@ class Ui_Dialog(object):
 "}\n"
 "/* /////////////////////////////////////////////////////////////////////////////////////////////////\n"
 "ScrollBars */\n"
+" QScrollBar {\n"
+"border: none;                                                /* без границ */\n"
+"    border-right:5px solid rgb(211, 211, 211);;    /* С правой красной раницей */\n"
+" }\n"
 " QScrollBar:vertical {\n"
 "    border: none;\n"
 "    background: rgb(52, 59, 72);\n"
@@ -221,8 +225,8 @@ class Ui_Dialog(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.widget_menu.sizePolicy().hasHeightForWidth())
         self.widget_menu.setSizePolicy(sizePolicy)
-        self.widget_menu.setMinimumSize(QtCore.QSize(210, 0))
-        self.widget_menu.setMaximumSize(QtCore.QSize(210, 16777215))
+        self.widget_menu.setMinimumSize(QtCore.QSize(220, 0))
+        self.widget_menu.setMaximumSize(QtCore.QSize(215, 16777215))
         self.widget_menu.setStyleSheet("")
         self.widget_menu.setObjectName("widget_menu")
         self.layout_menu = QtWidgets.QVBoxLayout(self.widget_menu)
@@ -259,11 +263,13 @@ class Ui_Dialog(object):
         self.layout_menu_title.addWidget(self.label_text_app_name)
         self.layout_menu.addWidget(self.widget_menu_title)
         self.widget_menu_body = QtWidgets.QWidget(self.widget_menu)
-        self.widget_menu_body.setStyleSheet("")
+        self.widget_menu_body.setStyleSheet(" .QWidget{\n"
+"\n"
+"}")
         self.widget_menu_body.setObjectName("widget_menu_body")
         self.layout_menu_body = QtWidgets.QVBoxLayout(self.widget_menu_body)
         self.layout_menu_body.setSizeConstraint(QtWidgets.QLayout.SetMaximumSize)
-        self.layout_menu_body.setContentsMargins(0, 0, 0, 0)
+        self.layout_menu_body.setContentsMargins(0, 0, 4, 0)
         self.layout_menu_body.setSpacing(0)
         self.layout_menu_body.setObjectName("layout_menu_body")
         self.scrollArea_menu_body = QtWidgets.QScrollArea(self.widget_menu_body)
@@ -279,7 +285,7 @@ class Ui_Dialog(object):
         self.scrollArea_menu_body.setAlignment(QtCore.Qt.AlignCenter)
         self.scrollArea_menu_body.setObjectName("scrollArea_menu_body")
         self.scrollAreaWidgetContents = QtWidgets.QWidget()
-        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, -320, 206, 890))
+        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, -251, 208, 890))
         self.scrollAreaWidgetContents.setStyleSheet("")
         self.scrollAreaWidgetContents.setObjectName("scrollAreaWidgetContents")
         self.Layout_scroll_menu = QtWidgets.QVBoxLayout(self.scrollAreaWidgetContents)
@@ -859,7 +865,7 @@ class Ui_Dialog(object):
         font.setWeight(50)
         self.lineEdit_threshold_correlation.setFont(font)
         self.lineEdit_threshold_correlation.setStyleSheet("")
-        self.lineEdit_threshold_correlation.setText("0")
+        self.lineEdit_threshold_correlation.setText("30")
         self.lineEdit_threshold_correlation.setMaxLength(10)
         self.lineEdit_threshold_correlation.setAlignment(QtCore.Qt.AlignCenter)
         self.lineEdit_threshold_correlation.setDragEnabled(False)
@@ -1005,7 +1011,7 @@ class Ui_Dialog(object):
         font.setWeight(50)
         self.lineEdit_smoothing.setFont(font)
         self.lineEdit_smoothing.setStyleSheet("")
-        self.lineEdit_smoothing.setText("5")
+        self.lineEdit_smoothing.setText("3")
         self.lineEdit_smoothing.setMaxLength(10)
         self.lineEdit_smoothing.setAlignment(QtCore.Qt.AlignCenter)
         self.lineEdit_smoothing.setDragEnabled(False)
@@ -1089,7 +1095,7 @@ class Ui_Dialog(object):
         font.setWeight(50)
         self.lineEdit_smoothing_sigma_window_width.setFont(font)
         self.lineEdit_smoothing_sigma_window_width.setStyleSheet("")
-        self.lineEdit_smoothing_sigma_window_width.setText("20")
+        self.lineEdit_smoothing_sigma_window_width.setText("25")
         self.lineEdit_smoothing_sigma_window_width.setMaxLength(10)
         self.lineEdit_smoothing_sigma_window_width.setAlignment(QtCore.Qt.AlignCenter)
         self.lineEdit_smoothing_sigma_window_width.setDragEnabled(False)
@@ -1591,7 +1597,6 @@ class Ui_Dialog(object):
 "    border-top:1px solid rgb(255, 255, 255);\n"
 "}\n"
 "\n"
-"\n"
 "/* срабатывает, при нажатии*/\n"
 "QPushButton:pressed      {\n"
 "    border: none;                                                /* без границ */\n"
@@ -1601,6 +1606,22 @@ class Ui_Dialog(object):
 "\n"
 "    border-right:1px solid rgb(255, 255, 255);    /* С правой красной раницей */\n"
 "    border-bottom:1px solid rgb(255, 255, 255);\n"
+"}\n"
+"/* Состояние - не выбран*/\n"
+"QPushButton {\n"
+"    /* Выбор картинки*/\n"
+"    image: url(:/expand2/resource/expand_2/up_black_24dp.svg);\n"
+"    image: url(:/expand/resource/expand/up_black_36dp.svg);\n"
+"\n"
+"}\n"
+"\n"
+"\n"
+"/* Состояние -  выбран*/\n"
+"QPushButton:checked {\n"
+"    /* Выбор картинки*/\n"
+"    image: url(:/expand2/resource/expand_2/down_black_36dp.svg);\n"
+"    image: url(:/expand/resource/expand/down_black_36dp.svg);\n"
+"\n"
 "}\n"
 "/* ///////////////////////////////////////////////////////////////////////////////////////////////// */\n"
 "")
@@ -1628,6 +1649,7 @@ class Ui_Dialog(object):
         self.radioButton_data_graph_1.setSizePolicy(sizePolicy)
         self.radioButton_data_graph_1.setMinimumSize(QtCore.QSize(33, 33))
         self.radioButton_data_graph_1.setMaximumSize(QtCore.QSize(33, 33))
+        self.radioButton_data_graph_1.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
         self.radioButton_data_graph_1.setStyleSheet("/* /////////////////////////////////////////////////////////////////////////////////////////////////\n"
 "RadioButton */\n"
 "QRadioButton::indicator {\n"
@@ -1675,6 +1697,7 @@ class Ui_Dialog(object):
         self.radioButton_correlation_graph_1.setSizePolicy(sizePolicy)
         self.radioButton_correlation_graph_1.setMinimumSize(QtCore.QSize(33, 33))
         self.radioButton_correlation_graph_1.setMaximumSize(QtCore.QSize(33, 33))
+        self.radioButton_correlation_graph_1.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
         self.radioButton_correlation_graph_1.setStyleSheet("/* /////////////////////////////////////////////////////////////////////////////////////////////////\n"
 "RadioButton */\n"
 "QRadioButton::indicator {\n"
@@ -1720,6 +1743,7 @@ class Ui_Dialog(object):
         self.radioButton_sigma_grapgh_1.setSizePolicy(sizePolicy)
         self.radioButton_sigma_grapgh_1.setMinimumSize(QtCore.QSize(33, 33))
         self.radioButton_sigma_grapgh_1.setMaximumSize(QtCore.QSize(33, 33))
+        self.radioButton_sigma_grapgh_1.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
         self.radioButton_sigma_grapgh_1.setStyleSheet("/* /////////////////////////////////////////////////////////////////////////////////////////////////\n"
 "RadioButton */\n"
 "QRadioButton::indicator {\n"
@@ -1766,6 +1790,7 @@ class Ui_Dialog(object):
         self.radioButton_noise_graph_1.setSizePolicy(sizePolicy)
         self.radioButton_noise_graph_1.setMinimumSize(QtCore.QSize(33, 33))
         self.radioButton_noise_graph_1.setMaximumSize(QtCore.QSize(33, 33))
+        self.radioButton_noise_graph_1.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
         self.radioButton_noise_graph_1.setStyleSheet("/* /////////////////////////////////////////////////////////////////////////////////////////////////\n"
 "RadioButton */\n"
 "QRadioButton::indicator {\n"
@@ -1811,6 +1836,7 @@ class Ui_Dialog(object):
         self.radioButton_width_graph_1.setSizePolicy(sizePolicy)
         self.radioButton_width_graph_1.setMinimumSize(QtCore.QSize(33, 33))
         self.radioButton_width_graph_1.setMaximumSize(QtCore.QSize(33, 33))
+        self.radioButton_width_graph_1.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
         self.radioButton_width_graph_1.setStyleSheet("/* /////////////////////////////////////////////////////////////////////////////////////////////////\n"
 "RadioButton */\n"
 "QRadioButton::indicator {\n"
@@ -1863,6 +1889,8 @@ class Ui_Dialog(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.widget_toolbar_2.sizePolicy().hasHeightForWidth())
         self.widget_toolbar_2.setSizePolicy(sizePolicy)
+        self.widget_toolbar_2.setContextMenuPolicy(QtCore.Qt.DefaultContextMenu)
+        self.widget_toolbar_2.setLayoutDirection(QtCore.Qt.LeftToRight)
         self.widget_toolbar_2.setStyleSheet("QWidget{\n"
 "background-color: rgb(240, 240, 240);\n"
 "color: rgb(0, 0, 0);\n"
@@ -1898,14 +1926,58 @@ class Ui_Dialog(object):
 "\n"
 "    border-right:1px solid rgb(255, 255, 255);    /* С правой красной раницей */\n"
 "    border-bottom:1px solid rgb(255, 255, 255);\n"
+"}/* Состояние - не выбран*/\n"
+"QPushButton {\n"
+"    /* Выбор картинки*/\n"
+"    image: url(:/expand2/resource/expand_2/up_black_24dp.svg);\n"
+"    image: url(:/expand/resource/expand/up_black_36dp.svg);\n"
+"\n"
+"}\n"
+"\n"
+"\n"
+"/* Состояние -  выбран*/\n"
+"QPushButton:checked {\n"
+"    /* Выбор картинки*/\n"
+"    image: url(:/expand2/resource/expand_2/down_black_36dp.svg);\n"
+"    image: url(:/expand/resource/expand/down_black_36dp.svg);\n"
+"\n"
 "}\n"
 "/* ///////////////////////////////////////////////////////////////////////////////////////////////// */\n"
 "")
+        self.widget_toolbar_2.setLocale(QtCore.QLocale(QtCore.QLocale.Russian, QtCore.QLocale.Russia))
         self.widget_toolbar_2.setObjectName("widget_toolbar_2")
         self.layout_toolbar_2 = QtWidgets.QHBoxLayout(self.widget_toolbar_2)
-        self.layout_toolbar_2.setContentsMargins(5, 0, 5, 0)
+        self.layout_toolbar_2.setSizeConstraint(QtWidgets.QLayout.SetDefaultConstraint)
+        self.layout_toolbar_2.setContentsMargins(0, 0, 5, 0)
         self.layout_toolbar_2.setSpacing(5)
         self.layout_toolbar_2.setObjectName("layout_toolbar_2")
+        self.widget_graphic_view_2 = QtWidgets.QWidget(self.widget_toolbar_2)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Preferred)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.widget_graphic_view_2.sizePolicy().hasHeightForWidth())
+        self.widget_graphic_view_2.setSizePolicy(sizePolicy)
+        self.widget_graphic_view_2.setStyleSheet(".QWidget{\n"
+"    border: none;                                                /* без границ */\n"
+"    border-left:2px solid rgb(211, 211, 211);;    /* С правой красной раницей */\n"
+"    border-right:2px solid rgb(211, 211, 211);;    /* С правой красной раницей */\n"
+"}")
+        self.widget_graphic_view_2.setObjectName("widget_graphic_view_2")
+        self.layout_graphic_view_2 = QtWidgets.QHBoxLayout(self.widget_graphic_view_2)
+        self.layout_graphic_view_2.setContentsMargins(5, 0, 5, 0)
+        self.layout_graphic_view_2.setSpacing(5)
+        self.layout_graphic_view_2.setObjectName("layout_graphic_view_2")
+        self.pushButton_graphic_view_2 = QtWidgets.QPushButton(self.widget_graphic_view_2)
+        self.pushButton_graphic_view_2.setMinimumSize(QtCore.QSize(32, 32))
+        self.pushButton_graphic_view_2.setMaximumSize(QtCore.QSize(32, 32))
+        self.pushButton_graphic_view_2.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+        self.pushButton_graphic_view_2.setText("")
+        self.pushButton_graphic_view_2.setIconSize(QtCore.QSize(32, 32))
+        self.pushButton_graphic_view_2.setCheckable(True)
+        self.pushButton_graphic_view_2.setChecked(True)
+        self.pushButton_graphic_view_2.setObjectName("pushButton_graphic_view_2")
+        self.layout_graphic_view_2.addWidget(self.pushButton_graphic_view_2)
+        self.layout_toolbar_2.addWidget(self.widget_graphic_view_2)
         self.widget_select_graphic_2 = QtWidgets.QWidget(self.widget_toolbar_2)
         self.widget_select_graphic_2.setStyleSheet(".QWidget{\n"
 "    border: none;                                                /* без границ */\n"
@@ -1925,6 +1997,7 @@ class Ui_Dialog(object):
         self.radioButton_data_graph_2.setSizePolicy(sizePolicy)
         self.radioButton_data_graph_2.setMinimumSize(QtCore.QSize(33, 33))
         self.radioButton_data_graph_2.setMaximumSize(QtCore.QSize(33, 33))
+        self.radioButton_data_graph_2.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
         self.radioButton_data_graph_2.setStyleSheet("/* /////////////////////////////////////////////////////////////////////////////////////////////////\n"
 "RadioButton */\n"
 "QRadioButton::indicator {\n"
@@ -1972,6 +2045,7 @@ class Ui_Dialog(object):
         self.radioButton_correlation_graph_2.setSizePolicy(sizePolicy)
         self.radioButton_correlation_graph_2.setMinimumSize(QtCore.QSize(33, 33))
         self.radioButton_correlation_graph_2.setMaximumSize(QtCore.QSize(33, 33))
+        self.radioButton_correlation_graph_2.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
         self.radioButton_correlation_graph_2.setStyleSheet("/* /////////////////////////////////////////////////////////////////////////////////////////////////\n"
 "RadioButton */\n"
 "QRadioButton::indicator {\n"
@@ -2017,6 +2091,7 @@ class Ui_Dialog(object):
         self.radioButton_sigma_grapgh_2.setSizePolicy(sizePolicy)
         self.radioButton_sigma_grapgh_2.setMinimumSize(QtCore.QSize(33, 33))
         self.radioButton_sigma_grapgh_2.setMaximumSize(QtCore.QSize(33, 33))
+        self.radioButton_sigma_grapgh_2.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
         self.radioButton_sigma_grapgh_2.setStyleSheet("/* /////////////////////////////////////////////////////////////////////////////////////////////////\n"
 "RadioButton */\n"
 "QRadioButton::indicator {\n"
@@ -2063,6 +2138,7 @@ class Ui_Dialog(object):
         self.radioButton_noise_graph_2.setSizePolicy(sizePolicy)
         self.radioButton_noise_graph_2.setMinimumSize(QtCore.QSize(33, 33))
         self.radioButton_noise_graph_2.setMaximumSize(QtCore.QSize(33, 33))
+        self.radioButton_noise_graph_2.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
         self.radioButton_noise_graph_2.setStyleSheet("/* /////////////////////////////////////////////////////////////////////////////////////////////////\n"
 "RadioButton */\n"
 "QRadioButton::indicator {\n"
@@ -2108,6 +2184,7 @@ class Ui_Dialog(object):
         self.radioButton_width_graph_2.setSizePolicy(sizePolicy)
         self.radioButton_width_graph_2.setMinimumSize(QtCore.QSize(33, 33))
         self.radioButton_width_graph_2.setMaximumSize(QtCore.QSize(33, 33))
+        self.radioButton_width_graph_2.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
         self.radioButton_width_graph_2.setStyleSheet("/* /////////////////////////////////////////////////////////////////////////////////////////////////\n"
 "RadioButton */\n"
 "QRadioButton::indicator {\n"
@@ -2146,9 +2223,22 @@ class Ui_Dialog(object):
         self.radioButton_width_graph_2.setObjectName("radioButton_width_graph_2")
         self.layout_select_graphic_2.addWidget(self.radioButton_width_graph_2)
         self.layout_toolbar_2.addWidget(self.widget_select_graphic_2)
+        self.widget_toolbar_graphics_2 = QtWidgets.QWidget(self.widget_toolbar_2)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Preferred)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.widget_toolbar_graphics_2.sizePolicy().hasHeightForWidth())
+        self.widget_toolbar_graphics_2.setSizePolicy(sizePolicy)
+        self.widget_toolbar_graphics_2.setObjectName("widget_toolbar_graphics_2")
+        self.layout_toolbar_graphics_2 = QtWidgets.QHBoxLayout(self.widget_toolbar_graphics_2)
+        self.layout_toolbar_graphics_2.setContentsMargins(0, 0, 0, 0)
+        self.layout_toolbar_graphics_2.setSpacing(0)
+        self.layout_toolbar_graphics_2.setObjectName("layout_toolbar_graphics_2")
+        self.layout_toolbar_2.addWidget(self.widget_toolbar_graphics_2)
         self.layout_plotting.addWidget(self.widget_toolbar_2)
         self.layout__main_body.addWidget(self.widget_plotting)
         self.widget_right = QtWidgets.QWidget(self.widget_main_body)
+        self.widget_right.setMinimumSize(QtCore.QSize(260, 0))
         self.widget_right.setStyleSheet("")
         self.widget_right.setObjectName("widget_right")
         self.layout_right = QtWidgets.QHBoxLayout(self.widget_right)
@@ -2170,10 +2260,15 @@ class Ui_Dialog(object):
 "")
         self.widget_table.setObjectName("widget_table")
         self.layout_table = QtWidgets.QVBoxLayout(self.widget_table)
-        self.layout_table.setContentsMargins(0, 0, 0, 0)
+        self.layout_table.setContentsMargins(2, 0, 0, 0)
         self.layout_table.setSpacing(0)
         self.layout_table.setObjectName("layout_table")
         self.tableWidget_frequency_absorption = QtWidgets.QTableWidget(self.widget_table)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.tableWidget_frequency_absorption.sizePolicy().hasHeightForWidth())
+        self.tableWidget_frequency_absorption.setSizePolicy(sizePolicy)
         self.tableWidget_frequency_absorption.setStyleSheet("background-color: rgb(33, 37, 43);")
         self.tableWidget_frequency_absorption.setFrameShape(QtWidgets.QFrame.NoFrame)
         self.tableWidget_frequency_absorption.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
@@ -2259,7 +2354,7 @@ class Ui_Dialog(object):
         self.layout_start_range_8.setObjectName("layout_start_range_8")
         self.lineEdit_window_width = QtWidgets.QLineEdit(self.widget_input_window_view)
         self.lineEdit_window_width.setEnabled(True)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.lineEdit_window_width.sizePolicy().hasHeightForWidth())
@@ -2274,7 +2369,7 @@ class Ui_Dialog(object):
         self.lineEdit_window_width.setObjectName("lineEdit_window_width")
         self.layout_start_range_8.addWidget(self.lineEdit_window_width)
         self.label_text_units_window_width = QtWidgets.QLabel(self.widget_input_window_view)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.label_text_units_window_width.sizePolicy().hasHeightForWidth())
@@ -2347,6 +2442,9 @@ class Ui_Dialog(object):
         self.pushButton_correlation_heade.clicked['bool'].connect(self.widget_correlation_body.setVisible) # type: ignore
         self.pushButton_noise_header.clicked['bool'].connect(self.widget_noise_body.setVisible) # type: ignore
         self.pushButton_width_cut_header.clicked['bool'].connect(self.widget_width_cut_body.setVisible) # type: ignore
+        self.pushButton_graphic_view_2.clicked['bool'].connect(self.widget_plot_2.setVisible) # type: ignore
+        self.pushButton_graphic_view_2.clicked['bool'].connect(self.widget_select_graphic_2.setVisible) # type: ignore
+        self.pushButton_graphic_view_2.clicked['bool'].connect(self.widget_toolbar_graphics_2.setVisible) # type: ignore
         QtCore.QMetaObject.connectSlotsByName(Dialog)
 
     def retranslateUi(self, Dialog):

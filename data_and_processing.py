@@ -49,12 +49,57 @@ class DataAndProcessing:
         self.data[self.names_processing] = np.nan
         self.correlation_threshold = None
         self.point_absorption_after_correlation = pd.DataFrame()
+        self.point_absorption_after_processing = pd.Series()
 
     # (*) Чистит все данные (альтернатива:  self.data = self.data.head(0))
     def clear_data(self):
         self.data = self.data.head(0)
         self.correlation_threshold = None
         self.point_absorption_after_correlation = pd.DataFrame()
+        self.point_absorption_after_processing = pd.Series()
+
+    # ОБЩИЙ АЛГОРИТМ
+    def all_processing(
+            self,
+            correlation_window_width: int,
+            correlation_threshold: float,
+            smooth_window_width: int,
+            sigma_window_width: int,
+            sigma_multiplier: float,
+            erosion: int,
+            dilation: int):
+        # Нет данных
+        if (self.data["frequency"].empty and
+                self.data["without_gas"].empty and
+                self.data["with_gas"].empty):
+            return
+
+        # Чистим от прошлых данных
+        self.clear_data_processing()
+
+        # (1) КОРРЕЛЯЦИЯ
+        self.correlate(correlation_window_width)
+        # Значение порога корреляции
+        self.correlation_threshold = correlation_threshold
+
+        # (2.1) СГЛАЖИВАНИЕ -> СИГМА
+        # Сглаживание
+        self.smoothing_data_without_gas(smooth_window_width)
+        # Сигма
+        self.sigma_finding(sigma_window_width)
+
+        # (2.2) СРАВНЕНИЕ
+        # сигмы и разницы
+        self.remove_below_sigma(sigma_multiplier)
+
+        # (3) Ширина участка
+        # Запрашиваем параметры
+        self.width_filter(erosion, dilation)
+
+        # Находим
+        self.find_intervals_after_correlation()  # Интервалы линий поглощение после корреляции
+        self.find_point_after_correlation()  # Точки линий поглощения, от корреляции
+        self.find_intervals_after_processing()  # Находит точки прошедшие фильтрацию сигмой и шириной участка
 
     # ОБРАБОТКА (1): Считаем корреляцию между данными
     def correlate(self, window_width):
@@ -68,7 +113,7 @@ class DataAndProcessing:
 
         # Считаем корреляцию окном с корреляцией, результирующее значение в середину окна
         self.data["correlate"] = (self.data["without_gas"]) \
-            .rolling(window_width) \
+            .rolling(window_width, center=True) \
             .corr(self.data["with_gas"])
         # ПО СМЫСЛУ ДОЛЖЕН БЫТЬ СДВИГ!!! .shift(periods=-window_width//2)
         # или .rolling(window_width, center=True)
@@ -103,7 +148,7 @@ class DataAndProcessing:
 
     # (2.3) Разница данных с газом и без (положительная часть)
     def difference_empty_and_signal(self):
-        self.data["difference"] = (self.data["with_gas"] - self.data["without_gas"]).clip(lower=0)
+        self.data["difference"] = (self.data["with_gas"] - self.data["without_gas"])  # .clip(lower=0)
         # Порог для корреляции задан -> Разница на участках меньше корреляции
         if not (self.correlation_threshold is None):
             self.data["difference"] = self.data["difference"] * (self.data["correlate"] < self.correlation_threshold)
@@ -197,14 +242,11 @@ class DataAndProcessing:
         self.point_absorption_after_correlation["status"] = False
 
     # АЛГОРИТМ ПОСЛЕ КОРРЕЛЯЦИИ
-
+    # По результирующим частотам и найденным точка от корреляции
+    # оставляет точки прошедшие фильтрацию сигмой и шириной участка
     def find_intervals_after_processing(self):
+        # Частоты интервалов после обработки
         processing = self.data["frequency"][self.data["bool_result"]]
-        self.point_absorption_after_correlation["status"] = self.point_absorption_after_correlation["status"].index.\
+        # Точки, которые содержались в интервалах после обработки
+        self.point_absorption_after_correlation["status"] = self.point_absorption_after_correlation["status"].index. \
             isin(processing.index)
-        print("status",self.point_absorption_after_correlation["status"] )
-
-    def find_intervals_after_processing2(self):
-        samples = self.data["frequency"][self.data.bool_result]
-        self.point_absorption_after_correlation=samples[
-            samples.index.isin(self.point_absorption_after_correlation.index)]

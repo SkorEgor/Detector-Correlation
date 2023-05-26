@@ -25,6 +25,10 @@
 }
 /* /////////////////////////////////////////////////////////////////////////////////////////////////
 ScrollBars */
+ QScrollBar {
+border: none;												/* без границ */
+	border-right:5px solid rgb(211, 211, 211);;	/* С правой красной раницей */
+ }
  QScrollBar:vertical {
 	border: none;
     background: rgb(52, 59, 72);
@@ -242,13 +246,13 @@ QTableCornerButton::section {background-color: rgb(33, 37, 43); }
      </property>
      <property name="minimumSize">
       <size>
-       <width>210</width>
+       <width>220</width>
        <height>0</height>
       </size>
      </property>
      <property name="maximumSize">
       <size>
-       <width>210</width>
+       <width>215</width>
        <height>16777215</height>
       </size>
      </property>
@@ -358,7 +362,9 @@ QTableCornerButton::section {background-color: rgb(33, 37, 43); }
       <item>
        <widget class="QWidget" name="widget_menu_body" native="true">
         <property name="styleSheet">
-         <string notr="true"/>
+         <string notr="true"> .QWidget{
+
+}</string>
         </property>
         <layout class="QVBoxLayout" name="layout_menu_body">
          <property name="spacing">
@@ -374,7 +380,7 @@ QTableCornerButton::section {background-color: rgb(33, 37, 43); }
           <number>0</number>
          </property>
          <property name="rightMargin">
-          <number>0</number>
+          <number>4</number>
          </property>
          <property name="bottomMargin">
           <number>0</number>
@@ -415,8 +421,8 @@ QTableCornerButton::section {background-color: rgb(33, 37, 43); }
             <property name="geometry">
              <rect>
               <x>0</x>
-              <y>-320</y>
-              <width>206</width>
+              <y>-251</y>
+              <width>208</width>
               <height>890</height>
              </rect>
             </property>
@@ -1905,7 +1911,7 @@ background-image: url(:/update/resource/update/update2_white_18dp.svg);
                          <string notr="true"/>
                         </property>
                         <property name="text">
-                         <string notr="true">0</string>
+                         <string notr="true">30</string>
                         </property>
                         <property name="maxLength">
                          <number>10</number>
@@ -2282,7 +2288,7 @@ background-image: url(:/update/resource/update/update2_white_18dp.svg);
                          <string notr="true"/>
                         </property>
                         <property name="text">
-                         <string notr="true">5</string>
+                         <string notr="true">3</string>
                         </property>
                         <property name="maxLength">
                          <number>10</number>
@@ -2493,7 +2499,7 @@ background-image: url(:/update/resource/update/update2_white_18dp.svg);
                          <string notr="true"/>
                         </property>
                         <property name="text">
-                         <string notr="true">20</string>
+                         <string notr="true">25</string>
                         </property>
                         <property name="maxLength">
                          <number>10</number>
@@ -3726,7 +3732,6 @@ QPushButton:hover {
 	border-top:1px solid rgb(255, 255, 255);
 }
 
-
 /* срабатывает, при нажатии*/
 QPushButton:pressed      {
 	border: none;												/* без границ */
@@ -3736,6 +3741,22 @@ QPushButton:pressed      {
 
 	border-right:1px solid rgb(255, 255, 255);	/* С правой красной раницей */
 	border-bottom:1px solid rgb(255, 255, 255);
+}
+/* Состояние - не выбран*/
+QPushButton {
+	/* Выбор картинки*/
+	image: url(:/expand2/resource/expand_2/up_black_24dp.svg);
+	image: url(:/expand/resource/expand/up_black_36dp.svg);
+
+}
+
+
+/* Состояние -  выбран*/
+QPushButton:checked {
+	/* Выбор картинки*/
+	image: url(:/expand2/resource/expand_2/down_black_36dp.svg);
+	image: url(:/expand/resource/expand/down_black_36dp.svg);
+
 }
 /* ///////////////////////////////////////////////////////////////////////////////////////////////// */
 </string>
@@ -3800,6 +3821,9 @@ QPushButton:pressed      {
                       <width>33</width>
                       <height>33</height>
                      </size>
+                    </property>
+                    <property name="cursor">
+                     <cursorShape>PointingHandCursor</cursorShape>
                     </property>
                     <property name="styleSheet">
                      <string notr="true">/* /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -3873,6 +3897,9 @@ QRadioButton::indicator:checked {
                       <height>33</height>
                      </size>
                     </property>
+                    <property name="cursor">
+                     <cursorShape>PointingHandCursor</cursorShape>
+                    </property>
                     <property name="styleSheet">
                      <string notr="true">/* /////////////////////////////////////////////////////////////////////////////////////////////////
 RadioButton */
@@ -3942,6 +3969,9 @@ QRadioButton::indicator:checked {
                       <width>33</width>
                       <height>33</height>
                      </size>
+                    </property>
+                    <property name="cursor">
+                     <cursorShape>PointingHandCursor</cursorShape>
                     </property>
                     <property name="styleSheet">
                      <string notr="true">/* /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -4014,6 +4044,9 @@ QRadioButton::indicator:checked {
                       <height>33</height>
                      </size>
                     </property>
+                    <property name="cursor">
+                     <cursorShape>PointingHandCursor</cursorShape>
+                    </property>
                     <property name="styleSheet">
                      <string notr="true">/* /////////////////////////////////////////////////////////////////////////////////////////////////
 RadioButton */
@@ -4083,6 +4116,9 @@ QRadioButton::indicator:checked {
                       <width>33</width>
                       <height>33</height>
                      </size>
+                    </property>
+                    <property name="cursor">
+                     <cursorShape>PointingHandCursor</cursorShape>
                     </property>
                     <property name="styleSheet">
                      <string notr="true">/* /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -4169,6 +4205,12 @@ QRadioButton::indicator:checked {
                 <verstretch>0</verstretch>
                </sizepolicy>
               </property>
+              <property name="contextMenuPolicy">
+               <enum>Qt::DefaultContextMenu</enum>
+              </property>
+              <property name="layoutDirection">
+               <enum>Qt::LeftToRight</enum>
+              </property>
               <property name="styleSheet">
                <string notr="true">QWidget{
 background-color: rgb(240, 240, 240);
@@ -4205,16 +4247,37 @@ QPushButton:pressed      {
 
 	border-right:1px solid rgb(255, 255, 255);	/* С правой красной раницей */
 	border-bottom:1px solid rgb(255, 255, 255);
+}/* Состояние - не выбран*/
+QPushButton {
+	/* Выбор картинки*/
+	image: url(:/expand2/resource/expand_2/up_black_24dp.svg);
+	image: url(:/expand/resource/expand/up_black_36dp.svg);
+
+}
+
+
+/* Состояние -  выбран*/
+QPushButton:checked {
+	/* Выбор картинки*/
+	image: url(:/expand2/resource/expand_2/down_black_36dp.svg);
+	image: url(:/expand/resource/expand/down_black_36dp.svg);
+
 }
 /* ///////////////////////////////////////////////////////////////////////////////////////////////// */
 </string>
               </property>
-              <layout class="QHBoxLayout" name="layout_toolbar_2">
+              <property name="locale">
+               <locale language="Russian" country="Russia"/>
+              </property>
+              <layout class="QHBoxLayout" name="layout_toolbar_2" stretch="0,0,0">
                <property name="spacing">
                 <number>5</number>
                </property>
+               <property name="sizeConstraint">
+                <enum>QLayout::SetDefaultConstraint</enum>
+               </property>
                <property name="leftMargin">
-                <number>5</number>
+                <number>0</number>
                </property>
                <property name="topMargin">
                 <number>0</number>
@@ -4225,6 +4288,74 @@ QPushButton:pressed      {
                <property name="bottomMargin">
                 <number>0</number>
                </property>
+               <item>
+                <widget class="QWidget" name="widget_graphic_view_2" native="true">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="styleSheet">
+                  <string notr="true">.QWidget{
+	border: none;												/* без границ */
+	border-left:2px solid rgb(211, 211, 211);;	/* С правой красной раницей */
+	border-right:2px solid rgb(211, 211, 211);;	/* С правой красной раницей */
+}</string>
+                 </property>
+                 <layout class="QHBoxLayout" name="layout_graphic_view_2">
+                  <property name="spacing">
+                   <number>5</number>
+                  </property>
+                  <property name="leftMargin">
+                   <number>5</number>
+                  </property>
+                  <property name="topMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="rightMargin">
+                   <number>5</number>
+                  </property>
+                  <property name="bottomMargin">
+                   <number>0</number>
+                  </property>
+                  <item>
+                   <widget class="QPushButton" name="pushButton_graphic_view_2">
+                    <property name="minimumSize">
+                     <size>
+                      <width>32</width>
+                      <height>32</height>
+                     </size>
+                    </property>
+                    <property name="maximumSize">
+                     <size>
+                      <width>32</width>
+                      <height>32</height>
+                     </size>
+                    </property>
+                    <property name="cursor">
+                     <cursorShape>PointingHandCursor</cursorShape>
+                    </property>
+                    <property name="text">
+                     <string/>
+                    </property>
+                    <property name="iconSize">
+                     <size>
+                      <width>32</width>
+                      <height>32</height>
+                     </size>
+                    </property>
+                    <property name="checkable">
+                     <bool>true</bool>
+                    </property>
+                    <property name="checked">
+                     <bool>true</bool>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
                <item>
                 <widget class="QWidget" name="widget_select_graphic_2" native="true">
                  <property name="styleSheet">
@@ -4269,6 +4400,9 @@ QPushButton:pressed      {
                       <width>33</width>
                       <height>33</height>
                      </size>
+                    </property>
+                    <property name="cursor">
+                     <cursorShape>PointingHandCursor</cursorShape>
                     </property>
                     <property name="styleSheet">
                      <string notr="true">/* /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -4342,6 +4476,9 @@ QRadioButton::indicator:checked {
                       <height>33</height>
                      </size>
                     </property>
+                    <property name="cursor">
+                     <cursorShape>PointingHandCursor</cursorShape>
+                    </property>
                     <property name="styleSheet">
                      <string notr="true">/* /////////////////////////////////////////////////////////////////////////////////////////////////
 RadioButton */
@@ -4411,6 +4548,9 @@ QRadioButton::indicator:checked {
                       <width>33</width>
                       <height>33</height>
                      </size>
+                    </property>
+                    <property name="cursor">
+                     <cursorShape>PointingHandCursor</cursorShape>
                     </property>
                     <property name="styleSheet">
                      <string notr="true">/* /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -4483,6 +4623,9 @@ QRadioButton::indicator:checked {
                       <height>33</height>
                      </size>
                     </property>
+                    <property name="cursor">
+                     <cursorShape>PointingHandCursor</cursorShape>
+                    </property>
                     <property name="styleSheet">
                      <string notr="true">/* /////////////////////////////////////////////////////////////////////////////////////////////////
 RadioButton */
@@ -4553,6 +4696,9 @@ QRadioButton::indicator:checked {
                       <height>33</height>
                      </size>
                     </property>
+                    <property name="cursor">
+                     <cursorShape>PointingHandCursor</cursorShape>
+                    </property>
                     <property name="styleSheet">
                      <string notr="true">/* /////////////////////////////////////////////////////////////////////////////////////////////////
 RadioButton */
@@ -4606,6 +4752,33 @@ QRadioButton::indicator:checked {
                  </layout>
                 </widget>
                </item>
+               <item>
+                <widget class="QWidget" name="widget_toolbar_graphics_2" native="true">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <layout class="QHBoxLayout" name="layout_toolbar_graphics_2">
+                  <property name="spacing">
+                   <number>0</number>
+                  </property>
+                  <property name="leftMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="topMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="rightMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="bottomMargin">
+                   <number>0</number>
+                  </property>
+                 </layout>
+                </widget>
+               </item>
               </layout>
              </widget>
             </item>
@@ -4614,6 +4787,12 @@ QRadioButton::indicator:checked {
          </item>
          <item>
           <widget class="QWidget" name="widget_right" native="true">
+           <property name="minimumSize">
+            <size>
+             <width>260</width>
+             <height>0</height>
+            </size>
+           </property>
            <property name="styleSheet">
             <string notr="true"/>
            </property>
@@ -4654,7 +4833,7 @@ QCheckBox::indicator:checked {
                 <number>0</number>
                </property>
                <property name="leftMargin">
-                <number>0</number>
+                <number>2</number>
                </property>
                <property name="topMargin">
                 <number>0</number>
@@ -4667,6 +4846,12 @@ QCheckBox::indicator:checked {
                </property>
                <item>
                 <widget class="QTableWidget" name="tableWidget_frequency_absorption">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
                  <property name="styleSheet">
                   <string notr="true">background-color: rgb(33, 37, 43);</string>
                  </property>
@@ -4907,7 +5092,7 @@ QCheckBox::indicator:checked {
                            <bool>true</bool>
                           </property>
                           <property name="sizePolicy">
-                           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                           <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
                             <horstretch>0</horstretch>
                             <verstretch>0</verstretch>
                            </sizepolicy>
@@ -4944,7 +5129,7 @@ QCheckBox::indicator:checked {
                         <item>
                          <widget class="QLabel" name="label_text_units_window_width">
                           <property name="sizePolicy">
-                           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                           <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
                             <horstretch>0</horstretch>
                             <verstretch>0</verstretch>
                            </sizepolicy>
@@ -5118,12 +5303,12 @@ QCheckBox::indicator:checked {
    <slot>setVisible(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>172</x>
+     <x>170</x>
      <y>50</y>
     </hint>
     <hint type="destinationlabel">
-     <x>204</x>
-     <y>158</y>
+     <x>203</x>
+     <y>122</y>
     </hint>
    </hints>
   </connection>
@@ -5134,11 +5319,11 @@ QCheckBox::indicator:checked {
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>84</x>
+     <x>102</x>
      <y>282</y>
     </hint>
     <hint type="destinationlabel">
-     <x>161</x>
+     <x>157</x>
      <y>312</y>
     </hint>
    </hints>
@@ -5150,11 +5335,11 @@ QCheckBox::indicator:checked {
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>164</x>
+     <x>182</x>
      <y>282</y>
     </hint>
     <hint type="destinationlabel">
-     <x>161</x>
+     <x>157</x>
      <y>342</y>
     </hint>
    </hints>
@@ -5167,7 +5352,7 @@ QCheckBox::indicator:checked {
    <hints>
     <hint type="sourcelabel">
      <x>202</x>
-     <y>1041</y>
+     <y>567</y>
     </hint>
     <hint type="destinationlabel">
      <x>1152</x>
@@ -5182,12 +5367,12 @@ QCheckBox::indicator:checked {
    <slot>setVisible(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>110</x>
+     <x>108</x>
      <y>363</y>
     </hint>
     <hint type="destinationlabel">
-     <x>192</x>
-     <y>398</y>
+     <x>190</x>
+     <y>446</y>
     </hint>
    </hints>
   </connection>
@@ -5198,12 +5383,12 @@ QCheckBox::indicator:checked {
    <slot>setVisible(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>128</x>
+     <x>126</x>
      <y>530</y>
     </hint>
     <hint type="destinationlabel">
-     <x>164</x>
-     <y>565</y>
+     <x>162</x>
+     <y>613</y>
     </hint>
    </hints>
   </connection>
@@ -5214,12 +5399,60 @@ QCheckBox::indicator:checked {
    <slot>setVisible(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>109</x>
-     <y>795</y>
+     <x>107</x>
+     <y>773</y>
     </hint>
     <hint type="destinationlabel">
-     <x>170</x>
-     <y>809</y>
+     <x>168</x>
+     <y>857</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_graphic_view_2</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>widget_plot_2</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>239</x>
+     <y>585</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>277</x>
+     <y>552</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_graphic_view_2</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>widget_select_graphic_2</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>239</x>
+     <y>592</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>272</x>
+     <y>599</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_graphic_view_2</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>widget_toolbar_graphics_2</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>243</x>
+     <y>574</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>687</x>
+     <y>593</y>
     </hint>
    </hints>
   </connection>

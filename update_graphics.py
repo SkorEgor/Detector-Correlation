@@ -21,7 +21,7 @@ class UpdateGraphics:
         # Объект графики для отрисовки данных
         self.graph = graph
 
-        # Данных
+        # Объект данных
         self.data = data
 
         # Связь кнопок и данных
@@ -36,7 +36,7 @@ class UpdateGraphics:
         self.radio_button_connect()
 
         # Нажатая кнопка
-        # Кнопки не -> ищем; Если передали -> запоминаем
+        # Кнопки нет -> ищем; Если передали -> запоминаем
         if radio_button_now is None:
             self.radio_button_now = self.radio_button_check()
         else:

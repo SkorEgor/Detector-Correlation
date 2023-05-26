@@ -3,6 +3,10 @@
     <file>resource/checkbox_status_success/check_error_red_24dp.svg</file>
     <file>resource/checkbox_status_success/check_ok_grean_24dp.svg</file>
   </qresource>
+  <qresource prefix="expand2">
+    <file>resource/expand_2/down_black_36dp.svg</file>
+    <file>resource/expand_2/up_black_24dp.svg</file>
+  </qresource>
   <qresource prefix="shared">
     <file>resource/file_download_white_24dp.svg</file>
   </qresource>
@@ -37,5 +41,9 @@
     <file>resource/menu_titles_black/menu_data_black_36dp.svg</file>
     <file>resource/menu_titles_black/menu_noise_black_36dp.svg</file>
     <file>resource/menu_titles_black/menu_width_black_36dp.svg</file>
+  </qresource>
+  <qresource prefix="expand">
+    <file>resource/expand/down_black_36dp.svg</file>
+    <file>resource/expand/up_black_36dp.svg</file>
   </qresource>
 </RCC>

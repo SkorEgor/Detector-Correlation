@@ -3,7 +3,7 @@ from matplotlib.backends.backend_qt5agg import (
     FigureCanvasQTAgg as FigureCanvas,
     NavigationToolbar2QT as NavigationToolbar)
 
-
+# Класс для объектов графика
 class Graph:
     def __init__(self, layout, widget, layout_toolbar=None):
         # Объекты графика
@@ -11,12 +11,14 @@ class Graph:
         self.figure = None
         self.canvas = None
         self.toolbar = None
-        self.layout = layout
-        self.widget = widget
+        self.layout = layout  # Слой - для отрисовки графика
+        self.widget = widget  # Виджет - для отрисовки графика
+        # Если передали отдельный слой для toolbar, помещаем его туда
         if layout_toolbar is None:
             self.layout_toolbar = layout
         else:
             self.layout_toolbar = layout_toolbar
+        # Вызываем инициализацию
         self.initialize()
 
     def initialize(self, draw=False):

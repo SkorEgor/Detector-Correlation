@@ -2,7 +2,6 @@
 from gui import Ui_Dialog
 from data_and_processing import DataAndProcessing
 from graph import Graph
-from drawer import Drawer as drawer
 from update_graphics import UpdateGraphics
 
 import functools
@@ -11,14 +10,12 @@ import pandas as pd
 
 from PyQt5 import QtWidgets, QtCore
 from PyQt5.QtWidgets import QFileDialog, QMessageBox, QTableWidgetItem
-from PyQt5.QtCore import Qt, QSize
+from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtGui import QIcon
 
 import matplotlib
 
 matplotlib.use('TkAgg')
-import time
-from PyQt5.QtCore import QTimer
 
 
 # ПАРСЕРЫ ДАННЫХ
@@ -215,7 +212,7 @@ class GuiProgram(Ui_Dialog):
         self.graph_2 = Graph(
             layout=self.layout_plot_2,
             widget=self.widget_plot_2,
-            layout_toolbar=self.layout_toolbar_2
+            layout_toolbar=self.layout_toolbar_graphics_2
         )
 
         # Синхронизация отображения данных на 1 графике
@@ -400,18 +397,18 @@ class GuiProgram(Ui_Dialog):
     def checking_all_processing_parameters(self, message=False):
         return (
             # (1) ДАННЫЕ
-                self.check_data_without_gas() and
-                self.check_data_with_gas() and
-                # (2) Корреляция
-                self.check_correlation_width(message) and
-                self.check_threshold_correlation(message) and
-                # (3) ШУМ
-                self.check_smoothing_width(message) and
-                self.check_sigma_multiplier(message) and
-                self.check_sigma_window_width(message) and
-                # (4) Ширина участка
-                self.check_erosion(message) and
-                self.check_extension(message)
+            self.check_data_without_gas() and
+            self.check_data_with_gas() and
+            # (2) Корреляция
+            self.check_correlation_width(message) and
+            self.check_threshold_correlation(message) and
+            # (3) ШУМ
+            self.check_smoothing_width(message) and
+            self.check_sigma_multiplier(message) and
+            self.check_sigma_window_width(message) and
+            # (4) Ширина участка
+            self.check_erosion(message) and
+            self.check_extension(message)
         )
 
     ######################################
@@ -571,78 +568,37 @@ class GuiProgram(Ui_Dialog):
         if not self.checking_all_processing_parameters(True):
             return
 
-        # Чистим от прошлых данных
-        self.data_signals.clear_data_processing()
+        # Проверяем диапазон чтения и обновляем исходные данные
+        self.updating_frequency_range()
 
-        # (1) КОРРЕЛЯЦИЯ
-        # Запрос окна корреляции значения
+        # ЗАПРОС ПАРАМЕТРОВ ОБРАБОТКИ
+        # (1) Запрос окна корреляции значения
         correlation_window_width = int(self.lineEdit_correlation.text())
-        # Вызов расчета корреляции
-        self.data_signals.correlate(correlation_window_width)
-
-        # Расчет значения порога корреляции
+        # Порог корреляции
         correlation_threshold = float(self.lineEdit_threshold_correlation.text()) / 100
-        self.data_signals.correlation_threshold = correlation_threshold  # Запоминаем порог, для построения разности
-
-        # (2.1) СГЛАЖИВАНИЕ -> СИГМА
-        # Сглаживание
+        # (2.1) Ширина окна сглаживания
         smooth_window_width = int(self.lineEdit_smoothing.text())
-        self.data_signals.smoothing_data_without_gas(smooth_window_width)
-
-        # Сигма
+        # Ширина окна сигмы
         sigma_window_width = int(self.lineEdit_smoothing_sigma_window_width.text())
-        self.data_signals.sigma_finding(sigma_window_width)
-
-        # (2.2) СРАВНЕНИЕ
-        # сигмы и разницы
+        # (2.2) Множитель сигмы
         sigma_multiplier = float(self.lineEdit_sigma_multiplier.text())
-        self.data_signals.remove_below_sigma(sigma_multiplier)
-
-        # (3) Ширина участка
-        # Запрашиваем параметры
+        # (3) Запрашиваем параметры ширина участка
         erosion = int(self.lineEdit_erosion.text())
         dilation = int(self.lineEdit_extension.text())
 
-        self.data_signals.width_filter(erosion, dilation)
-
-        self.data_signals.find_intervals_after_correlation()
-        self.data_signals.find_point_after_correlation()
-
-        self.data_signals.find_intervals_after_processing()
+        # ОБРАБОТКА
+        self.data_signals.all_processing(
+            correlation_window_width=correlation_window_width,
+            correlation_threshold=correlation_threshold,
+            smooth_window_width=smooth_window_width,
+            sigma_window_width=sigma_window_width,
+            sigma_multiplier=sigma_multiplier,
+            erosion=erosion,
+            dilation=dilation)
 
         # Отрисовка
         self.update_graphics()
         self.table()
-
-        # # Запрос порогового значения
-        # threshold = float(self.lineEdit_threshold.text())
-        #
-        # # Если разницы нет, считать новую
-        # if self.data_signals.data_difference.empty:
-        #     # Вычитаем отсчеты сигнала с ошибкой и без
-        #     self.data_signals.data_difference = self.data_signals.difference_empty_and_signal()
-        #
-        # # Значение порога от макс. значения графика ошибки
-        # self.data_signals.threshold = self.data_signals.data_difference.max() * threshold / 100.
-        #
-        # # Перерисовка графика отклонений
-        # threshold_signal = [self.data_signals.threshold] * self.data_signals.data_difference.size
-        # self.updating_deviation_graph(threshold_signal)
-        #
-        # # Находим промежутки выше порога
-        # self.data_signals.range_above_threshold(self.data_signals.threshold)
-        #
-        # # Перерисовка графика газа
-        # self.updating_gas_graph(self.data_signals.absorption_line_ranges)
-        #
-        # # Нахождение пиков
-        # self.data_signals.search_peaks()
-        #
-        # # Вывод данных в таблицу
-        # self.table()
-
-        # Переводим состояние интерфейса
-        # self.state4_completed_processing()
 
     # РАБОТА С ТАБЛИЦЕЙ
     # Основная программа - (4) Заполение таблицы
