@@ -18,7 +18,15 @@ class Ui_Dialog(object):
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap(":/application picture/resource/application picture/app_icon-round.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         Dialog.setWindowIcon(icon)
-        Dialog.setStyleSheet("QWidget{\n"
+        Dialog.setStyleSheet("")
+        Dialog.setSizeGripEnabled(False)
+        Dialog.setModal(False)
+        self.layout_dialog_main = QtWidgets.QHBoxLayout(Dialog)
+        self.layout_dialog_main.setContentsMargins(0, 0, 0, 0)
+        self.layout_dialog_main.setSpacing(0)
+        self.layout_dialog_main.setObjectName("layout_dialog_main")
+        self.widget_style_sheet = QtWidgets.QWidget(Dialog)
+        self.widget_style_sheet.setStyleSheet("QWidget{\n"
 "    background-color: rgb(33, 37, 43);\n"
 "    color: rgb(208, 208, 208);\n"
 "    font-size: 10pt;\n"
@@ -213,13 +221,12 @@ class Ui_Dialog(object):
 "}\n"
 "QTableCornerButton::section {background-color: rgb(33, 37, 43); }\n"
 "/* ///////////////////////////////////////////////////////////////////////////////////////////////// */")
-        Dialog.setSizeGripEnabled(False)
-        Dialog.setModal(False)
-        self.layout_dialog_main = QtWidgets.QHBoxLayout(Dialog)
-        self.layout_dialog_main.setContentsMargins(0, 0, 0, 0)
-        self.layout_dialog_main.setSpacing(0)
-        self.layout_dialog_main.setObjectName("layout_dialog_main")
-        self.widget_menu = QtWidgets.QWidget(Dialog)
+        self.widget_style_sheet.setObjectName("widget_style_sheet")
+        self.layout_style_sheet = QtWidgets.QHBoxLayout(self.widget_style_sheet)
+        self.layout_style_sheet.setContentsMargins(0, 0, 0, 0)
+        self.layout_style_sheet.setSpacing(0)
+        self.layout_style_sheet.setObjectName("layout_style_sheet")
+        self.widget_menu = QtWidgets.QWidget(self.widget_style_sheet)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -240,15 +247,19 @@ class Ui_Dialog(object):
         self.widget_menu_title.setStyleSheet("")
         self.widget_menu_title.setObjectName("widget_menu_title")
         self.layout_menu_title = QtWidgets.QHBoxLayout(self.widget_menu_title)
-        self.layout_menu_title.setContentsMargins(5, 0, 0, 0)
+        self.layout_menu_title.setContentsMargins(0, 0, 0, 0)
         self.layout_menu_title.setSpacing(0)
         self.layout_menu_title.setObjectName("layout_menu_title")
         self.label_imag_app = QtWidgets.QLabel(self.widget_menu_title)
         self.label_imag_app.setMinimumSize(QtCore.QSize(40, 40))
-        self.label_imag_app.setMaximumSize(QtCore.QSize(40, 40))
+        self.label_imag_app.setMaximumSize(QtCore.QSize(54, 40))
+        self.label_imag_app.setSizeIncrement(QtCore.QSize(0, 0))
+        self.label_imag_app.setStyleSheet("padding-left: 7px;\n"
+"padding-right: 7px;")
         self.label_imag_app.setText("")
         self.label_imag_app.setPixmap(QtGui.QPixmap(":/application picture/resource/application picture/app_icon-round.png"))
         self.label_imag_app.setScaledContents(True)
+        self.label_imag_app.setIndent(-1)
         self.label_imag_app.setObjectName("label_imag_app")
         self.layout_menu_title.addWidget(self.label_imag_app)
         self.label_text_app_name = QtWidgets.QLabel(self.widget_menu_title)
@@ -261,6 +272,29 @@ class Ui_Dialog(object):
         self.label_text_app_name.setAlignment(QtCore.Qt.AlignCenter)
         self.label_text_app_name.setObjectName("label_text_app_name")
         self.layout_menu_title.addWidget(self.label_text_app_name)
+        self.checkBox_color_theme = QtWidgets.QCheckBox(self.widget_menu_title)
+        self.checkBox_color_theme.setMinimumSize(QtCore.QSize(40, 0))
+        self.checkBox_color_theme.setMaximumSize(QtCore.QSize(54, 20))
+        self.checkBox_color_theme.setLayoutDirection(QtCore.Qt.LeftToRight)
+        self.checkBox_color_theme.setStyleSheet("/* Состояние - не выбран*/\n"
+"QCheckBox::indicator:unchecked {\n"
+"    /* Выбор картинки*/\n"
+"    image: url(:/toggle/resource/toggle/toggle_off_black_36dp.svg);\n"
+"    image: url(:/toggle_color_theme/resource/toggle_color_theme/toggle_on_white.svg);\n"
+"}\n"
+"\n"
+"/* Состояние -  выбран*/\n"
+"QCheckBox::indicator:checked {\n"
+"    /* Выбор картинки*/\n"
+"    image: url(:/toggle/resource/toggle/toggle_on_white_36dp.svg);\n"
+"    image: url(:/toggle_color_theme/resource/toggle_color_theme/toggle_off_black.svg);\n"
+"}")
+        self.checkBox_color_theme.setText("")
+        self.checkBox_color_theme.setIconSize(QtCore.QSize(30, 30))
+        self.checkBox_color_theme.setChecked(True)
+        self.checkBox_color_theme.setTristate(False)
+        self.checkBox_color_theme.setObjectName("checkBox_color_theme")
+        self.layout_menu_title.addWidget(self.checkBox_color_theme)
         self.layout_menu.addWidget(self.widget_menu_title)
         self.widget_menu_body = QtWidgets.QWidget(self.widget_menu)
         self.widget_menu_body.setStyleSheet(" .QWidget{\n"
@@ -285,7 +319,7 @@ class Ui_Dialog(object):
         self.scrollArea_menu_body.setAlignment(QtCore.Qt.AlignCenter)
         self.scrollArea_menu_body.setObjectName("scrollArea_menu_body")
         self.scrollAreaWidgetContents = QtWidgets.QWidget()
-        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, -251, 208, 890))
+        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 208, 890))
         self.scrollAreaWidgetContents.setStyleSheet("")
         self.scrollAreaWidgetContents.setObjectName("scrollAreaWidgetContents")
         self.Layout_scroll_menu = QtWidgets.QVBoxLayout(self.scrollAreaWidgetContents)
@@ -1465,11 +1499,10 @@ class Ui_Dialog(object):
         self.layout_menu.addWidget(self.widget_menu_body)
         self.widget_menu_bottom = QtWidgets.QWidget(self.widget_menu)
         self.widget_menu_bottom.setMinimumSize(QtCore.QSize(0, 40))
-        self.widget_menu_bottom.setStyleSheet(".QWidget{\n"
+        self.widget_menu_bottom.setStyleSheet("QWidget#widget_menu_bottom{\n"
 "    border: none;                                                /* без границ */\n"
 "    border-top:2px solid rgb(255, 255, 255);    /* С правой красной раницей */\n"
-"}\n"
-"")
+"}")
         self.widget_menu_bottom.setObjectName("widget_menu_bottom")
         self.layout_menu_bottom = QtWidgets.QVBoxLayout(self.widget_menu_bottom)
         self.layout_menu_bottom.setContentsMargins(0, 5, 0, 0)
@@ -1534,8 +1567,8 @@ class Ui_Dialog(object):
         self.pushButton_menu_calculate.setObjectName("pushButton_menu_calculate")
         self.layout_menu_bottom.addWidget(self.pushButton_menu_calculate)
         self.layout_menu.addWidget(self.widget_menu_bottom)
-        self.layout_dialog_main.addWidget(self.widget_menu)
-        self.widget_main = QtWidgets.QWidget(Dialog)
+        self.layout_style_sheet.addWidget(self.widget_menu)
+        self.widget_main = QtWidgets.QWidget(self.widget_style_sheet)
         self.widget_main.setStyleSheet("")
         self.widget_main.setObjectName("widget_main")
         self.layout_main = QtWidgets.QVBoxLayout(self.widget_main)
@@ -2269,7 +2302,7 @@ class Ui_Dialog(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.tableWidget_frequency_absorption.sizePolicy().hasHeightForWidth())
         self.tableWidget_frequency_absorption.setSizePolicy(sizePolicy)
-        self.tableWidget_frequency_absorption.setStyleSheet("background-color: rgb(33, 37, 43);")
+        self.tableWidget_frequency_absorption.setStyleSheet("")
         self.tableWidget_frequency_absorption.setFrameShape(QtWidgets.QFrame.NoFrame)
         self.tableWidget_frequency_absorption.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         self.tableWidget_frequency_absorption.setEditTriggers(QtWidgets.QAbstractItemView.AnyKeyPressed|QtWidgets.QAbstractItemView.EditKeyPressed)
@@ -2432,7 +2465,8 @@ class Ui_Dialog(object):
         self.layout__main_body.addWidget(self.widget_right)
         self.layout__main_body.setStretch(0, 1)
         self.layout_main.addWidget(self.widget_main_body)
-        self.layout_dialog_main.addWidget(self.widget_main)
+        self.layout_style_sheet.addWidget(self.widget_main)
+        self.layout_dialog_main.addWidget(self.widget_style_sheet)
 
         self.retranslateUi(Dialog)
         self.pushButton_data_header.clicked['bool'].connect(self.widget_data_body.setVisible) # type: ignore

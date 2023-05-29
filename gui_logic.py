@@ -3,6 +3,7 @@ from gui import Ui_Dialog
 from data_and_processing import DataAndProcessing
 from graph import Graph
 from update_graphics import UpdateGraphics
+from color_theme import ColorTheme
 
 import functools
 
@@ -237,6 +238,9 @@ class GuiProgram(Ui_Dialog):
             radio_button_width=self.radioButton_width_graph_2,
         )
 
+        # Обработчик переключения цветовой темы
+        self.checkBox_color_theme.toggled.connect(self.update_color_theme)
+
         # Обработчики нажатий - кнопок порядка работы
         self.pushButton_reading_file_no_gas.clicked.connect(self.plotting_without_noise)  # Загрузить данные с вакуума
         self.pushButton_reading_file_with_gas.clicked.connect(self.signal_plotting)  # Загрузить данные с газом
@@ -268,6 +272,13 @@ class GuiProgram(Ui_Dialog):
 
         # Отрисовка (Задержка учета расчета геометрии окна)
         QTimer.singleShot(100, self.update_graphics)
+
+    # Смена цветового стиля интерфейса
+    def update_color_theme(self, state):
+        if state:
+            self.widget_style_sheet.setStyleSheet(ColorTheme.dark_style_sheet)
+        else:
+            self.widget_style_sheet.setStyleSheet(ColorTheme.light_style_sheet)
 
     # Инициализация: Пустая таблица
     def initialize_table(self):
@@ -397,18 +408,18 @@ class GuiProgram(Ui_Dialog):
     def checking_all_processing_parameters(self, message=False):
         return (
             # (1) ДАННЫЕ
-            self.check_data_without_gas() and
-            self.check_data_with_gas() and
-            # (2) Корреляция
-            self.check_correlation_width(message) and
-            self.check_threshold_correlation(message) and
-            # (3) ШУМ
-            self.check_smoothing_width(message) and
-            self.check_sigma_multiplier(message) and
-            self.check_sigma_window_width(message) and
-            # (4) Ширина участка
-            self.check_erosion(message) and
-            self.check_extension(message)
+                self.check_data_without_gas() and
+                self.check_data_with_gas() and
+                # (2) Корреляция
+                self.check_correlation_width(message) and
+                self.check_threshold_correlation(message) and
+                # (3) ШУМ
+                self.check_smoothing_width(message) and
+                self.check_sigma_multiplier(message) and
+                self.check_sigma_window_width(message) and
+                # (4) Ширина участка
+                self.check_erosion(message) and
+                self.check_extension(message)
         )
 
     ######################################

@@ -46,4 +46,12 @@
     <file>resource/expand/down_black_36dp.svg</file>
     <file>resource/expand/up_black_36dp.svg</file>
   </qresource>
+  <qresource prefix="toggle_color_theme">
+    <file>resource/toggle_color_theme/toggle_off_black.svg</file>
+    <file>resource/toggle_color_theme/toggle_on_white.svg</file>
+  </qresource>
+  <qresource prefix="toggle">
+    <file>resource/toggle/toggle_off_black_36dp.svg</file>
+    <file>resource/toggle/toggle_on_white_36dp.svg</file>
+  </qresource>
 </RCC>

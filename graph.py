@@ -3,6 +3,7 @@ from matplotlib.backends.backend_qt5agg import (
     FigureCanvasQTAgg as FigureCanvas,
     NavigationToolbar2QT as NavigationToolbar)
 
+
 # Класс для объектов графика
 class Graph:
     def __init__(self, layout, widget, layout_toolbar=None):
@@ -48,4 +49,3 @@ class Graph:
 
         # Перерисовываем
         self.canvas.draw()
-
