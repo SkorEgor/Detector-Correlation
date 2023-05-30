@@ -635,7 +635,7 @@ class GuiProgram(Ui_Dialog):
         # Нет точек поглощения - сброс
         if self.data_signals.point_absorption_after_correlation.empty:
             return
-        print("ok")
+
         # Задаем кол-во столбцов и строк
         self.tableWidget_frequency_absorption.setColumnCount(3)  # Столбцы
         # Строки
@@ -653,7 +653,7 @@ class GuiProgram(Ui_Dialog):
             number_rows = self.data_signals.point_absorption_after_correlation["status"] \
                 .count()
         self.tableWidget_frequency_absorption.setRowCount(number_rows)
-        print("ok")
+
         # Задаем название столбцов
         self.tableWidget_frequency_absorption.setHorizontalHeaderLabels(["Частота МГц", "Гамма"])
 
@@ -675,7 +675,7 @@ class GuiProgram(Ui_Dialog):
             else:
                 self.icon_now = 'empty'
             self.update_table_icon(self.icon_now)
-        print("ok")
+
         # Заполняем таблицу
         index = 0
         count_check = 0
@@ -711,7 +711,7 @@ class GuiProgram(Ui_Dialog):
             self.tableWidget_frequency_absorption.setCellWidget(index, 2, check_box)  # Вводим в таблицу
 
             index += 1
-        print("ok")
+
         # Размеры строк выровнять под содержимое
         self.tableWidget_frequency_absorption.resizeColumnsToContents()
         # Начальные данные для статистики
@@ -722,7 +722,7 @@ class GuiProgram(Ui_Dialog):
         # Выбранных строк
         # Альтернатива self.data_signals.point_absorption_after_correlation["status"].value_counts()[True]
         self.selected_rows = count_check
-        print("ok")
+
         self.frequency_selection()
 
     # Выбран check box таблицы, обновляем статистику под таблицей
@@ -750,7 +750,7 @@ class GuiProgram(Ui_Dialog):
         # Создаем строки статистики
         text_statistics \
             = f'Выбрано {self.selected_rows} из {self.total_rows} ( {percent_chosen:.2%} ) '
-        print(text_statistics)
+
         # Вывод в label под таблицей
         self.label_statistics_on_selected_frequencies.setText(text_statistics)
 
@@ -761,9 +761,6 @@ class GuiProgram(Ui_Dialog):
             self.update_table_icon('empty')
         else:
             self.update_table_icon('mixed')
-
-        # Возвращает текст статистики
-        return text_statistics
 
     # Выбрана строка таблицы
     def get_clicked_cell(self, row):
