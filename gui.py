@@ -220,7 +220,8 @@ class Ui_Dialog(object):
 "    border: 1px solid rgb(44, 49, 60);\n"
 "}\n"
 "QTableCornerButton::section {background-color: rgb(33, 37, 43); }\n"
-"/* ///////////////////////////////////////////////////////////////////////////////////////////////// */")
+"/* ///////////////////////////////////////////////////////////////////////////////////////////////// */\n"
+"")
         self.widget_style_sheet.setObjectName("widget_style_sheet")
         self.layout_style_sheet = QtWidgets.QHBoxLayout(self.widget_style_sheet)
         self.layout_style_sheet.setContentsMargins(0, 0, 0, 0)
@@ -255,7 +256,9 @@ class Ui_Dialog(object):
         self.label_imag_app.setMaximumSize(QtCore.QSize(54, 40))
         self.label_imag_app.setSizeIncrement(QtCore.QSize(0, 0))
         self.label_imag_app.setStyleSheet("padding-left: 7px;\n"
-"padding-right: 7px;")
+"padding-right: 7px;\n"
+"    border: none;                                                /* без границ */\n"
+"")
         self.label_imag_app.setText("")
         self.label_imag_app.setPixmap(QtGui.QPixmap(":/application picture/resource/application picture/app_icon-round.png"))
         self.label_imag_app.setScaledContents(True)
@@ -2296,6 +2299,39 @@ class Ui_Dialog(object):
         self.layout_table.setContentsMargins(2, 0, 0, 0)
         self.layout_table.setSpacing(0)
         self.layout_table.setObjectName("layout_table")
+        self.widget_table_view_mode = QtWidgets.QWidget(self.widget_table)
+        self.widget_table_view_mode.setObjectName("widget_table_view_mode")
+        self.horizontalLayout = QtWidgets.QHBoxLayout(self.widget_table_view_mode)
+        self.horizontalLayout.setContentsMargins(2, 2, 0, 2)
+        self.horizontalLayout.setSpacing(0)
+        self.horizontalLayout.setObjectName("horizontalLayout")
+        self.label_text_select_table_display = QtWidgets.QLabel(self.widget_table_view_mode)
+        self.label_text_select_table_display.setObjectName("label_text_select_table_display")
+        self.horizontalLayout.addWidget(self.label_text_select_table_display)
+        self.comboBox_select_table_view = QtWidgets.QComboBox(self.widget_table_view_mode)
+        self.comboBox_select_table_view.setMaximumSize(QtCore.QSize(45, 16777215))
+        self.comboBox_select_table_view.setStyleSheet("QWidget{\n"
+"selection-background-color: rgb(191, 191, 191);\n"
+"\n"
+"}")
+        self.comboBox_select_table_view.setCurrentText("")
+        self.comboBox_select_table_view.setInsertPolicy(QtWidgets.QComboBox.InsertAtBottom)
+        self.comboBox_select_table_view.setIconSize(QtCore.QSize(20, 20))
+        self.comboBox_select_table_view.setObjectName("comboBox_select_table_view")
+        icon2 = QtGui.QIcon()
+        icon2.addPixmap(QtGui.QPixmap(":/table_checkbox/resource/table_checkbox/var2_color/mixed_white_24dp.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.comboBox_select_table_view.addItem(icon2, "")
+        self.comboBox_select_table_view.setItemText(0, "")
+        icon3 = QtGui.QIcon()
+        icon3.addPixmap(QtGui.QPixmap(":/table_checkbox/resource/table_checkbox/var2_color/no_red_24dp.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.comboBox_select_table_view.addItem(icon3, "")
+        self.comboBox_select_table_view.setItemText(1, "")
+        icon4 = QtGui.QIcon()
+        icon4.addPixmap(QtGui.QPixmap(":/table_checkbox/resource/table_checkbox/var2_color/yes_green_24dp.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.comboBox_select_table_view.addItem(icon4, "")
+        self.comboBox_select_table_view.setItemText(2, "")
+        self.horizontalLayout.addWidget(self.comboBox_select_table_view)
+        self.layout_table.addWidget(self.widget_table_view_mode)
         self.tableWidget_frequency_absorption = QtWidgets.QTableWidget(self.widget_table)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
@@ -2516,6 +2552,7 @@ class Ui_Dialog(object):
         self.label_text_units_extension.setText(_translate("Dialog", " [кол-во]"))
         self.pushButton_close_open_table.setText(_translate("Dialog", "Таблица"))
         self.pushButton_menu_calculate.setText(_translate("Dialog", "Вычислить"))
+        self.label_text_select_table_display.setText(_translate("Dialog", "Отображаемые данных: "))
         self.tableWidget_frequency_absorption.setSortingEnabled(False)
         self.groupBox_window_view.setTitle(_translate("Dialog", "Окно просмотра"))
         self.label_text_window_width.setText(_translate("Dialog", "Ширина окна просмотра \n"

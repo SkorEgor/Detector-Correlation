@@ -239,7 +239,8 @@ QHeaderView::section:vertical
     border: 1px solid rgb(44, 49, 60);
 }
 QTableCornerButton::section {background-color: rgb(33, 37, 43); }
-/* ///////////////////////////////////////////////////////////////////////////////////////////////// */</string>
+/* ///////////////////////////////////////////////////////////////////////////////////////////////// */
+</string>
      </property>
      <layout class="QHBoxLayout" name="layout_style_sheet">
       <property name="spacing">
@@ -354,7 +355,9 @@ QTableCornerButton::section {background-color: rgb(33, 37, 43); }
               </property>
               <property name="styleSheet">
                <string notr="true">padding-left: 7px;
-padding-right: 7px;</string>
+padding-right: 7px;
+	border: none;												/* без границ */
+</string>
               </property>
               <property name="text">
                <string/>
@@ -4929,6 +4932,89 @@ QCheckBox::indicator:checked {
                   <property name="bottomMargin">
                    <number>0</number>
                   </property>
+                  <item>
+                   <widget class="QWidget" name="widget_table_view_mode" native="true">
+                    <layout class="QHBoxLayout" name="horizontalLayout">
+                     <property name="spacing">
+                      <number>0</number>
+                     </property>
+                     <property name="leftMargin">
+                      <number>2</number>
+                     </property>
+                     <property name="topMargin">
+                      <number>2</number>
+                     </property>
+                     <property name="rightMargin">
+                      <number>0</number>
+                     </property>
+                     <property name="bottomMargin">
+                      <number>2</number>
+                     </property>
+                     <item>
+                      <widget class="QLabel" name="label_text_select_table_display">
+                       <property name="text">
+                        <string>Отображаемые данных: </string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QComboBox" name="comboBox_select_table_view">
+                       <property name="maximumSize">
+                        <size>
+                         <width>45</width>
+                         <height>16777215</height>
+                        </size>
+                       </property>
+                       <property name="styleSheet">
+                        <string notr="true">QWidget{
+selection-background-color: rgb(191, 191, 191);
+
+}</string>
+                       </property>
+                       <property name="currentText">
+                        <string/>
+                       </property>
+                       <property name="insertPolicy">
+                        <enum>QComboBox::InsertAtBottom</enum>
+                       </property>
+                       <property name="iconSize">
+                        <size>
+                         <width>20</width>
+                         <height>20</height>
+                        </size>
+                       </property>
+                       <item>
+                        <property name="text">
+                         <string/>
+                        </property>
+                        <property name="icon">
+                         <iconset resource="res.qrc">
+                          <normaloff>:/table_checkbox/resource/table_checkbox/var2_color/mixed_white_24dp.svg</normaloff>:/table_checkbox/resource/table_checkbox/var2_color/mixed_white_24dp.svg</iconset>
+                        </property>
+                       </item>
+                       <item>
+                        <property name="text">
+                         <string/>
+                        </property>
+                        <property name="icon">
+                         <iconset resource="res.qrc">
+                          <normaloff>:/table_checkbox/resource/table_checkbox/var2_color/no_red_24dp.svg</normaloff>:/table_checkbox/resource/table_checkbox/var2_color/no_red_24dp.svg</iconset>
+                        </property>
+                       </item>
+                       <item>
+                        <property name="text">
+                         <string/>
+                        </property>
+                        <property name="icon">
+                         <iconset resource="res.qrc">
+                          <normaloff>:/table_checkbox/resource/table_checkbox/var2_color/yes_green_24dp.svg</normaloff>:/table_checkbox/resource/table_checkbox/var2_color/yes_green_24dp.svg</iconset>
+                        </property>
+                       </item>
+                      </widget>
+                     </item>
+                    </layout>
+                   </widget>
+                  </item>
                   <item>
                    <widget class="QTableWidget" name="tableWidget_frequency_absorption">
                     <property name="sizePolicy">

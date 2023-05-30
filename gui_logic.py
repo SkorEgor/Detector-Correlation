@@ -76,93 +76,79 @@ def parser(string_list, start_frequency=None, end_frequency=None):
 
 # ФУНКЦИИ ПРОВЕРКИ ВВЕДЕННЫХ ДАННЫХ
 # Дробное, больше нуля (для частоты)
-def check_float_and_positive(val, field_name, message=False):
+def check_float_and_positive(val, field_name, icon=None, message=False):
     try:
         val = float(val)
 
     except ValueError:
         if message:
-            QMessageBox.warning(None, "Ошибка ввода", f'Введите число в поле "{field_name!r}".')
+            QMessageBox.warning(icon, "Ошибка ввода", f'Введите число в поле "{field_name!r}".')
         return False
 
     # Проверка положительности
     if val < 0:
         if message:
-            QMessageBox.warning(None, "Ошибка ввода", f'Введите положительное число в поле "{field_name!r}".')
+            QMessageBox.warning(icon, "Ошибка ввода", f'Введите положительное число в поле "{field_name!r}".')
         return False
 
     return True
 
 
 # Целое, больше нуля (для окна корреляции)
-def check_int_and_positive(val, field_name, message=False):
+def check_int_and_positive(val, field_name, icon=None, message=False):
     try:
         val = int(val)
 
     except ValueError:
         if message:
-            QMessageBox.warning(None, "Ошибка ввода", f'Введите целое число в поле "{field_name!r}".')
+            QMessageBox.warning(icon, "Ошибка ввода", f'Введите целое число в поле "{field_name!r}".')
         return False
 
     # Проверка положительности
     if val < 0:
         if message:
-            QMessageBox.warning(None, "Ошибка ввода", f'Введите положительное число в поле "{field_name!r}".')
+            QMessageBox.warning(icon, "Ошибка ввода", f'Введите положительное число в поле "{field_name!r}".')
         return False
 
     return True
 
 
 # Дробное, от 0 до 100 (для процентов и ширины окна просмотра)
-def check_float_and_0to100(val, field_name, message=False):
+def check_float_and_0to100(val, field_name, icon=None, message=False):
     try:
         val = float(val)
 
     except ValueError:
         if message:
-            QMessageBox.warning(None, "Ошибка ввода", f'Введите число в поле "{field_name!r}".')
+            QMessageBox.warning(icon, "Ошибка ввода", f'Введите число в поле "{field_name!r}".')
         return False
 
     # Проверка на диапазон
     if val < 0 or 100 < val:
         if message:
-            QMessageBox.warning(None, "Ошибка ввода", f'Введите число от 0 до 100 в поле "{field_name!r}".')
+            QMessageBox.warning(icon, "Ошибка ввода", f'Введите число от 0 до 100 в поле "{field_name!r}".')
         return False
 
     return True
 
 
 # Дробное, от -100 до 100 (для процентов и ширины окна просмотра)
-def check_float_and_100to100(val, field_name, message=False):
+def check_float_and_100to100(val, field_name, icon=None, message=False):
     try:
         val = float(val)
 
     except ValueError:
         if message:
-            QMessageBox.warning(None, "Ошибка ввода", f'Введите число в поле "{field_name!r}".')
+            QMessageBox.warning(icon, "Ошибка ввода", f'Введите число в поле "{field_name!r}".')
         return False
 
     # Проверка на диапазон
     if val < -100 or 100 < val:
         if message:
-            QMessageBox.warning(None, "Ошибка ввода", f'Введите число от -100 до 100 в поле "{field_name!r}".')
+            QMessageBox.warning(icon, "Ошибка ввода", f'Введите число от -100 до 100 в поле "{field_name!r}".')
         return False
 
     return True
-
-
-# Шаблон проверки поля
-def check(line_edit, check_function, check_box, field_name, message=False):
-    # Запрос порогового значения
-    val = line_edit.text()
-    if check_function(val, field_name, message):
-        # Статус - Ок
-        check_box.setCheckState(Qt.Checked)
-        return True
-
-    # Статус - ошибка
-    check_box.setCheckState(Qt.Unchecked)
-    return False
 
 
 # КЛАСС АЛГОРИТМА ПРИЛОЖЕНИЯ
@@ -265,6 +251,7 @@ class GuiProgram(Ui_Dialog):
         self.initialize_table()  # Инициализация пустой таблицы с заголовками
         self.pushButton_save_table_to_file.clicked.connect(self.saving_data)  # Сохранить данные из таблицы в файл
         self.tableWidget_frequency_absorption.cellClicked.connect(self.get_clicked_cell)  # Выбрана строка таблицы
+        self.comboBox_select_table_view.currentIndexChanged.connect(self.table)
         self.lineEdit_window_width.textEdited.connect(
             lambda: self.check_window_width(False))  # Обновился текст ширины окна просмотра
         # Выбран заголовок таблицы
@@ -290,6 +277,24 @@ class GuiProgram(Ui_Dialog):
 
     ######################################
     #           ПРОВЕРКИ ВВОДА
+    # (*) Шаблон проверки поля
+    def check(self, line_edit, check_function, check_box, field_name, message=False):
+        # Запрос порогового значения
+        val = line_edit.text()
+        if check_function(
+                val=val,
+                field_name=field_name,
+                icon=self.label_imag_app,
+                message=message
+        ):
+            # Статус - Ок
+            check_box.setCheckState(Qt.Checked)
+            return True
+
+        # Статус - ошибка
+        check_box.setCheckState(Qt.Unchecked)
+        return False
+
     # (1) ДАННЫЕ
     # Без вещества
     def check_data_without_gas(self):
@@ -303,7 +308,8 @@ class GuiProgram(Ui_Dialog):
 
         self.label_text_file_name_no_gas.setText("Нет данных")
         self.checkBox_download_no_gas.setCheckState(Qt.Unchecked)
-        QMessageBox.warning(None, "Ошибка входных данных", 'Загрузите файл данных "Без исследуемого вещества"')
+        QMessageBox.warning(self.label_imag_app, "Ошибка входных данных",
+                            'Загрузите файл данных "Без исследуемого вещества"')
         return False
 
     # С веществом
@@ -318,13 +324,36 @@ class GuiProgram(Ui_Dialog):
 
         self.label_text_file_name_with_gas.setText("Нет данных")
         self.checkBox_download_with_gas.setCheckState(Qt.Unchecked)
-        QMessageBox.warning(None, "Ошибка входных данных", 'Загрузите файл данных "C исследуемым веществом"')
+        QMessageBox.warning(self.label_imag_app, "Ошибка входных данных",
+                            'Загрузите файл данных "C исследуемым веществом"')
         return False
+
+    # (1.1) Диапазон частот
+    # Начало
+    def check_start_frequency(self):
+        return check_float_and_positive(
+            val=self.lineEdit_start_range.text(),
+            field_name="Частота от",
+            icon=self.label_imag_app,
+            message=True
+        )
+
+    # Конец
+    def check_end_frequency(self):
+        return check_float_and_positive(
+            val=self.lineEdit_end_range.text(),
+            field_name="Частота до",
+            icon=self.label_imag_app,
+            message=True
+        )
+
+    def check_frequency_range(self):
+        return self.check_start_frequency() and self.check_end_frequency
 
     # (2) Корреляция
     # Ширина
     def check_correlation_width(self, message=False):
-        return check(
+        return self.check(
             line_edit=self.lineEdit_correlation,
             check_function=check_int_and_positive,
             check_box=self.checkBox_status_correlation,
@@ -334,7 +363,7 @@ class GuiProgram(Ui_Dialog):
 
     # Порог
     def check_threshold_correlation(self, message=False):
-        return check(
+        return self.check(
             line_edit=self.lineEdit_threshold_correlation,
             check_function=check_float_and_100to100,
             check_box=self.checkBox_status_threshold_correlation,
@@ -345,7 +374,7 @@ class GuiProgram(Ui_Dialog):
     # (3) ШУМ
     # Ширина сглаживания
     def check_smoothing_width(self, message=False):
-        return check(
+        return self.check(
             line_edit=self.lineEdit_smoothing,
             check_function=check_int_and_positive,
             check_box=self.checkBox_status_smoothing,
@@ -355,7 +384,7 @@ class GuiProgram(Ui_Dialog):
 
     # Ширина сигмы
     def check_sigma_window_width(self, message=False):
-        return check(
+        return self.check(
             line_edit=self.lineEdit_smoothing_sigma_window_width,
             check_function=check_int_and_positive,
             check_box=self.checkBox_status_sigma_window_width,
@@ -365,7 +394,7 @@ class GuiProgram(Ui_Dialog):
 
     # Проверка множителя сигмы
     def check_sigma_multiplier(self, message=False):
-        return check(
+        return self.check(
             line_edit=self.lineEdit_sigma_multiplier,
             check_function=check_float_and_positive,
             check_box=self.checkBox_status_sigma_multiplier,
@@ -376,7 +405,7 @@ class GuiProgram(Ui_Dialog):
     # (4) Ширина участка
     # Сжатие
     def check_erosion(self, message=False):
-        return check(
+        return self.check(
             line_edit=self.lineEdit_erosion,
             check_function=check_int_and_positive,
             check_box=self.checkBox_status_erosion,
@@ -386,7 +415,7 @@ class GuiProgram(Ui_Dialog):
 
     # Расширение
     def check_extension(self, message=False):
-        return check(
+        return self.check(
             line_edit=self.lineEdit_extension,
             check_function=check_int_and_positive,
             check_box=self.checkBox_status_extension,
@@ -396,7 +425,7 @@ class GuiProgram(Ui_Dialog):
 
     # (*) Ширина окна просмотра
     def check_window_width(self, message=False):
-        return check(
+        return self.check(
             line_edit=self.lineEdit_window_width,
             check_function=check_float_and_positive,
             check_box=self.checkBox_status_window_width,
@@ -450,25 +479,18 @@ class GuiProgram(Ui_Dialog):
 
         # В зависимости от режима - парсим
         if self.radioButton_selected_range.isChecked():
-            # Считываем "Частоту от"
-            start_frequency = self.lineEdit_start_range.text()
-            # Проверка
-            if not check_float_and_positive(start_frequency, "Частота от"):
+            # Проверяем корректность диапазона
+            if not self.check_frequency_range():
                 return
-            # Приводим к дробному
-            start_frequency = float(start_frequency)
 
-            # Считываем "Частоту до"
-            end_frequency = self.lineEdit_end_range.text()
-            # Проверка
-            if not check_float_and_positive(end_frequency, "Частота до"):
-                return
-            # Приводим к дробному
-            end_frequency = float(end_frequency)
+            # Считываем "Частоту от" и приводим к дробному
+            start_frequency = float(self.lineEdit_start_range.text())
+            # Считываем "Частоту до" и приводим к дробному
+            end_frequency = float(self.lineEdit_end_range.text())
 
             # Проверка на правильность границ
             if end_frequency < start_frequency:
-                QMessageBox.warning(None, "Ошибка ввода", "Частота 'от' больше 'до', в фильтре чтения. ")
+                QMessageBox.warning(self.label_imag_app, "Ошибка ввода", "Частота 'от' больше 'до', в фильтре чтения. ")
                 return
             # Парс данных в заданных частотах
             frequency, gamma = parser(self.lines_file_without_gas, start_frequency, end_frequency)
@@ -522,25 +544,18 @@ class GuiProgram(Ui_Dialog):
             return
 
         if self.radioButton_selected_range.isChecked():
-            # Считываем "Частоту от"
-            start_frequency = self.lineEdit_start_range.text()
-            # Проверка
-            if not check_float_and_positive(start_frequency, "Частота от"):
+            # Проверяем корректность диапазона
+            if not self.check_frequency_range():
                 return
-            # Приводим к дробному
-            start_frequency = float(start_frequency)
 
-            # Считываем "Частоту до"
-            end_frequency = self.lineEdit_end_range.text()
-            # Проверка
-            if not check_float_and_positive(end_frequency, "Частота до"):
-                return
-            # Приводим к дробному
-            end_frequency = float(end_frequency)
+            # Считываем "Частоту от" и приводим к дробному
+            start_frequency = float(self.lineEdit_start_range.text())
+            # Считываем "Частоту до" и приводим к дробному
+            end_frequency = float(self.lineEdit_end_range.text())
 
             # Проверка на правильность границ
             if end_frequency < start_frequency:
-                QMessageBox.warning(None, "Ошибка ввода", "Частота 'от' больше 'до', в фильтре чтения. ")
+                QMessageBox.warning(self.label_imag_app, "Ошибка ввода", "Частота 'от' больше 'до', в фильтре чтения. ")
                 return
 
             # Парс данных в заданных частотах
@@ -609,43 +624,72 @@ class GuiProgram(Ui_Dialog):
 
         # Отрисовка
         self.update_graphics()
-        self.table()
+        self.table(
+            self.comboBox_select_table_view.currentIndex()  # Индекс выбранного элемента
+        )
 
     # РАБОТА С ТАБЛИЦЕЙ
     # Основная программа - (4) Заполение таблицы
-    def table(self):
+    def table(self, index_filter):
         # Нет точек поглощения - сброс
         if self.data_signals.point_absorption_after_correlation.empty:
             return
-
+        print("ok")
         # Задаем кол-во столбцов и строк
-        self.tableWidget_frequency_absorption.setRowCount(
-            self.data_signals.point_absorption_after_correlation[
-                self.data_signals.point_absorption_after_correlation.columns[0]].count())
-        self.tableWidget_frequency_absorption.setColumnCount(3)
-
+        self.tableWidget_frequency_absorption.setColumnCount(3)  # Столбцы
+        # Строки
+        number_rows = None
+        # Фильтр Крест
+        if index_filter == 1:
+            number_rows = (~self.data_signals.point_absorption_after_correlation["status"]) \
+                .sum()
+        # Фильтр Галочка
+        elif index_filter == 2:
+            number_rows = self.data_signals.point_absorption_after_correlation["status"] \
+                .sum()
+        # Фильтр - отображать все
+        else:
+            number_rows = self.data_signals.point_absorption_after_correlation["status"] \
+                .count()
+        self.tableWidget_frequency_absorption.setRowCount(number_rows)
+        print("ok")
         # Задаем название столбцов
         self.tableWidget_frequency_absorption.setHorizontalHeaderLabels(["Частота МГц", "Гамма"])
 
         # Устанавливаем начальное состояние иконки таблицы
-        # Если все элементы True - то всё выбрано
-        if self.data_signals.point_absorption_after_correlation["status"].all():
-            self.icon_now = 'selected'
-        # Хотя бы один True - смешанный вариант
-        elif self.data_signals.point_absorption_after_correlation["status"].any():
-            self.icon_now = 'mixed'
-        else:
+        # Фильтр Крест
+        if index_filter == 1:
             self.icon_now = 'empty'
-        self.update_table_icon(self.icon_now)
-
+        # Фильтр Галочка
+        elif index_filter == 2:
+            self.icon_now = 'selected'
+        # Фильтр - отображать все
+        else:
+            # Если все элементы True - то всё выбрано
+            if self.data_signals.point_absorption_after_correlation["status"].all():
+                self.icon_now = 'selected'
+            # Хотя бы один True - смешанный вариант
+            elif self.data_signals.point_absorption_after_correlation["status"].any():
+                self.icon_now = 'mixed'
+            else:
+                self.icon_now = 'empty'
+            self.update_table_icon(self.icon_now)
+        print("ok")
         # Заполняем таблицу
         index = 0
         count_check = 0
-        for f, g, status in zip(
+        for f, g, status, index_data in zip(
                 self.data_signals.point_absorption_after_correlation["frequency"],
                 self.data_signals.point_absorption_after_correlation["gamma"],
-                self.data_signals.point_absorption_after_correlation["status"]
+                self.data_signals.point_absorption_after_correlation["status"],
+                list(self.data_signals.point_absorption_after_correlation.index)
         ):
+            # Значение True и фильтр Крест - не отображать
+            if status and index_filter == 1:
+                continue
+            # Значение False и фильтр Галочка - не отображать
+            if (not status) and index_filter == 2:
+                continue
             # значения частоты и гаммы для 0 и 1 столбца
             self.tableWidget_frequency_absorption.setItem(index, 0, QTableWidgetItem(str('%.3f' % f)))
             self.tableWidget_frequency_absorption.setItem(index, 1, QTableWidgetItem(str('%.7E' % g)))
@@ -660,13 +704,13 @@ class GuiProgram(Ui_Dialog):
             # Обработчик нажатия, с передачей отправителя
             check_box.toggled.connect(
                 functools.partial(
-                    self.frequency_selection, check_box
+                    self.frequency_selection, check_box, index_data
                 )
             )
             self.tableWidget_frequency_absorption.setCellWidget(index, 2, check_box)  # Вводим в таблицу
 
             index += 1
-
+        print("ok")
         # Размеры строк выровнять под содержимое
         self.tableWidget_frequency_absorption.resizeColumnsToContents()
         # Начальные данные для статистики
@@ -677,10 +721,12 @@ class GuiProgram(Ui_Dialog):
         # Выбранных строк
         # Альтернатива self.data_signals.point_absorption_after_correlation["status"].value_counts()[True]
         self.selected_rows = count_check
+        print("ok")
         self.frequency_selection()
 
     # Выбран check box таблицы, обновляем статистику под таблицей
-    def frequency_selection(self, sender=None):
+    def frequency_selection(self, sender=None, index=None):
+
         # Если передали отправителя, проверяем состояние
         if sender is not None:
             # Если новое состояние - нажатое, то прибавляем к числу выбранных
@@ -689,10 +735,21 @@ class GuiProgram(Ui_Dialog):
             else:
                 self.selected_rows -= 1
 
+        # Если передали индекс, инвертируем состояние
+        if index is not None:
+            self.data_signals.point_absorption_after_correlation.at[index, "status"] = \
+                not self.data_signals.point_absorption_after_correlation["status"][index]
+
+        # Процент выбранных
+        if self.total_rows == 0:
+            percent_chosen = 0
+        else:
+            percent_chosen = self.selected_rows / self.total_rows
+
         # Создаем строки статистики
         text_statistics \
-            = f'Выбрано {self.selected_rows} из {self.total_rows} ( {self.selected_rows / self.total_rows:.2%} ) '
-
+            = f'Выбрано {self.selected_rows} из {self.total_rows} ( {percent_chosen:.2%} ) '
+        print(text_statistics)
         # Вывод в label под таблицей
         self.label_statistics_on_selected_frequencies.setText(text_statistics)
 
