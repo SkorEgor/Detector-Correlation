@@ -1,6 +1,7 @@
 # Класс темной и светлой темы приложения
 class ColorTheme:
-    light_style_sheet = """QWidget{
+    light_style_sheet = """
+   QWidget{
 	background-color: rgb(230, 230, 230);
 	color:rgb(33, 37, 43);
 	font-size: 10pt;
@@ -157,12 +158,14 @@ QGroupBox{
 QTableWidget */
 QTableWidget {	
 	gridline-color: rgb(160, 160, 160);
-	border-bottom: 1px solid rgb(44, 49, 60);
+	border-top: 2px solid rgb(212, 212, 212);
+	border-bottom: 2px solid  rgb(212, 212, 212);
 }
 QTableWidget::item:selected{
 	background-color: rgb(72, 81, 94);
 	background-color: rgb(182, 182, 182);
 }
+QHeaderView { qproperty-defaultAlignment: AlignCenter; }
 /*Цвет верхнего и левого поля*/
 QHeaderView::section{
 background-color: rgb(212, 212, 212);
@@ -173,8 +176,10 @@ border: 1px solid rgb(160, 160, 160);
 QTableCornerButton::section {background-color:rgb(212, 212, 212); }
 
 /* ///////////////////////////////////////////////////////////////////////////////////////////////// */
+
 """
-    dark_style_sheet = """QWidget{
+    dark_style_sheet = """
+   QWidget{
 	background-color: rgb(33, 37, 43);
 	color: rgb(208, 208, 208);
 	font-size: 10pt;
@@ -332,41 +337,23 @@ QGroupBox{
 /* ///////////////////////////////////////////////////////////////////////////////////////////////// */
 /* /////////////////////////////////////////////////////////////////////////////////////////////////
 QTableWidget */
+
 QTableWidget {	
 	gridline-color: rgb(136, 136, 136);
-	border-bottom: 1px solid rgb(44, 49, 60);
-}
-QTableWidget::item{
-
-	gridline-color: rgb(44, 49, 60);
+	border-top: 1px solid rgb(54, 60, 74);
+	border-bottom: 1px solid  rgb(54, 60, 74);
 }
 QTableWidget::item:selected{
 	background-color: rgb(72, 81, 94);
 }
+QHeaderView { qproperty-defaultAlignment: AlignCenter; }
+/*Цвет верхнего и левого поля*/
 QHeaderView::section{
-	background-color: rgb(33, 37, 43);
-	max-width: 30px;
-	border: 1px solid rgb(44, 49, 58);
-	border-style: none;
-    border-bottom: 1px solid rgb(44, 49, 60);
-    border-right: 1px solid rgb(44, 49, 60);
+	background-color:rgb(37, 41, 48);
+    border-style: none;
+border: 1px solid rgb(136, 136, 136);
 }
-QTableWidget::horizontalHeader {	
-	background-color: rgb(33, 37, 43);
-}
-QHeaderView::section:horizontal
-{
+/*Кнопка в верхнем левом углу*/
+QTableCornerButton::section {background-color:rgb(33, 37, 43); }
 
-    border: 1px solid rgb(33, 37, 43);
-	background-color: rgb(33, 37, 43);
-	padding: 3px;
-	border-top-left-radius: 7px;
-    border-top-right-radius: 7px;
-}
-QHeaderView::section:vertical
-{
-    border: 1px solid rgb(44, 49, 60);
-}
-QTableCornerButton::section {background-color: rgb(33, 37, 43); }
-/* ///////////////////////////////////////////////////////////////////////////////////////////////// */
 """

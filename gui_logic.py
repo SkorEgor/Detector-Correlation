@@ -272,9 +272,7 @@ class GuiProgram(Ui_Dialog):
         self.tableWidget_frequency_absorption.clear()
         self.tableWidget_frequency_absorption.setColumnCount(3)
         self.tableWidget_frequency_absorption.setHorizontalHeaderLabels(["Частота МГц", "Гамма", ""])
-        self.tableWidget_frequency_absorption.horizontalHeaderItem(0).setTextAlignment(Qt.AlignHCenter)
-        self.tableWidget_frequency_absorption.horizontalHeaderItem(1).setTextAlignment(Qt.AlignHCenter)
-        self.tableWidget_frequency_absorption.resizeColumnsToContents()
+        self.tableWidget_frequency_absorption.resizeColumnToContents(2)
 
     ######################################
     #           ПРОВЕРКИ ВВОДА
@@ -713,7 +711,10 @@ class GuiProgram(Ui_Dialog):
             index += 1
 
         # Размеры строк выровнять под содержимое
-        self.tableWidget_frequency_absorption.resizeColumnsToContents()
+        if index != 0:
+            self.tableWidget_frequency_absorption.resizeColumnsToContents()
+        else:
+            self.tableWidget_frequency_absorption.resizeColumnToContents(2)
         # Начальные данные для статистики
         # Всего строк
         # Альтернатива self.data_signals.point_absorption_after_correlation[

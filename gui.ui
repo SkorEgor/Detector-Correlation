@@ -45,7 +45,7 @@
    <item>
     <widget class="QWidget" name="widget_style_sheet" native="true">
      <property name="styleSheet">
-      <string notr="true">QWidget{
+      <string notr="true">   QWidget{
 	background-color: rgb(33, 37, 43);
 	color: rgb(208, 208, 208);
 	font-size: 10pt;
@@ -203,43 +203,27 @@ QGroupBox{
 /* ///////////////////////////////////////////////////////////////////////////////////////////////// */
 /* /////////////////////////////////////////////////////////////////////////////////////////////////
 QTableWidget */
+
 QTableWidget {	
 	gridline-color: rgb(136, 136, 136);
-	border-bottom: 1px solid rgb(44, 49, 60);
-}
-QTableWidget::item{
-
-	gridline-color: rgb(44, 49, 60);
+	border-top: 1px solid rgb(54, 60, 74);
+	border-bottom: 1px solid  rgb(54, 60, 74);
 }
 QTableWidget::item:selected{
 	background-color: rgb(72, 81, 94);
 }
-QHeaderView::section{
-	background-color: rgb(33, 37, 43);
-	max-width: 30px;
-	border: 1px solid rgb(44, 49, 58);
-	border-style: none;
-    border-bottom: 1px solid rgb(44, 49, 60);
-    border-right: 1px solid rgb(44, 49, 60);
-}
-QTableWidget::horizontalHeader {	
-	background-color: rgb(33, 37, 43);
-}
-QHeaderView::section:horizontal
-{
+/*Цвет верхнего и левого поля*/
+QHeaderView { 
+qproperty-defaultAlignment: AlignCenter;
 
-    border: 1px solid rgb(33, 37, 43);
-	background-color: rgb(33, 37, 43);
-	padding: 3px;
-	border-top-left-radius: 7px;
-    border-top-right-radius: 7px;
+ }
+QHeaderView::section{
+	background-color:rgb(37, 41, 48);
+    border-style: none;
+border: 1px solid rgb(136, 136, 136);
 }
-QHeaderView::section:vertical
-{
-    border: 1px solid rgb(44, 49, 60);
-}
-QTableCornerButton::section {background-color: rgb(33, 37, 43); }
-/* ///////////////////////////////////////////////////////////////////////////////////////////////// */
+/*Кнопка в верхнем левом углу*/
+QTableCornerButton::section {background-color:rgb(33, 37, 43); }
 </string>
      </property>
      <layout class="QHBoxLayout" name="layout_style_sheet">
@@ -4952,6 +4936,12 @@ QCheckBox::indicator:checked {
                      </property>
                      <item>
                       <widget class="QLabel" name="label_text_select_table_display">
+                       <property name="sizePolicy">
+                        <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+                         <horstretch>0</horstretch>
+                         <verstretch>0</verstretch>
+                        </sizepolicy>
+                       </property>
                        <property name="text">
                         <string>Отображаемые данных: </string>
                        </property>

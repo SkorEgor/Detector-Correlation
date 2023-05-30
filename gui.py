@@ -26,7 +26,7 @@ class Ui_Dialog(object):
         self.layout_dialog_main.setSpacing(0)
         self.layout_dialog_main.setObjectName("layout_dialog_main")
         self.widget_style_sheet = QtWidgets.QWidget(Dialog)
-        self.widget_style_sheet.setStyleSheet("QWidget{\n"
+        self.widget_style_sheet.setStyleSheet("   QWidget{\n"
 "    background-color: rgb(33, 37, 43);\n"
 "    color: rgb(208, 208, 208);\n"
 "    font-size: 10pt;\n"
@@ -184,43 +184,27 @@ class Ui_Dialog(object):
 "/* ///////////////////////////////////////////////////////////////////////////////////////////////// */\n"
 "/* /////////////////////////////////////////////////////////////////////////////////////////////////\n"
 "QTableWidget */\n"
+"\n"
 "QTableWidget {    \n"
 "    gridline-color: rgb(136, 136, 136);\n"
-"    border-bottom: 1px solid rgb(44, 49, 60);\n"
-"}\n"
-"QTableWidget::item{\n"
-"\n"
-"    gridline-color: rgb(44, 49, 60);\n"
+"    border-top: 1px solid rgb(54, 60, 74);\n"
+"    border-bottom: 1px solid  rgb(54, 60, 74);\n"
 "}\n"
 "QTableWidget::item:selected{\n"
 "    background-color: rgb(72, 81, 94);\n"
 "}\n"
-"QHeaderView::section{\n"
-"    background-color: rgb(33, 37, 43);\n"
-"    max-width: 30px;\n"
-"    border: 1px solid rgb(44, 49, 58);\n"
-"    border-style: none;\n"
-"    border-bottom: 1px solid rgb(44, 49, 60);\n"
-"    border-right: 1px solid rgb(44, 49, 60);\n"
-"}\n"
-"QTableWidget::horizontalHeader {    \n"
-"    background-color: rgb(33, 37, 43);\n"
-"}\n"
-"QHeaderView::section:horizontal\n"
-"{\n"
+"/*Цвет верхнего и левого поля*/\n"
+"QHeaderView { \n"
+"qproperty-defaultAlignment: AlignCenter;\n"
 "\n"
-"    border: 1px solid rgb(33, 37, 43);\n"
-"    background-color: rgb(33, 37, 43);\n"
-"    padding: 3px;\n"
-"    border-top-left-radius: 7px;\n"
-"    border-top-right-radius: 7px;\n"
+" }\n"
+"QHeaderView::section{\n"
+"    background-color:rgb(37, 41, 48);\n"
+"    border-style: none;\n"
+"border: 1px solid rgb(136, 136, 136);\n"
 "}\n"
-"QHeaderView::section:vertical\n"
-"{\n"
-"    border: 1px solid rgb(44, 49, 60);\n"
-"}\n"
-"QTableCornerButton::section {background-color: rgb(33, 37, 43); }\n"
-"/* ///////////////////////////////////////////////////////////////////////////////////////////////// */\n"
+"/*Кнопка в верхнем левом углу*/\n"
+"QTableCornerButton::section {background-color:rgb(33, 37, 43); }\n"
 "")
         self.widget_style_sheet.setObjectName("widget_style_sheet")
         self.layout_style_sheet = QtWidgets.QHBoxLayout(self.widget_style_sheet)
@@ -2306,6 +2290,11 @@ class Ui_Dialog(object):
         self.horizontalLayout.setSpacing(0)
         self.horizontalLayout.setObjectName("horizontalLayout")
         self.label_text_select_table_display = QtWidgets.QLabel(self.widget_table_view_mode)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Preferred)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.label_text_select_table_display.sizePolicy().hasHeightForWidth())
+        self.label_text_select_table_display.setSizePolicy(sizePolicy)
         self.label_text_select_table_display.setObjectName("label_text_select_table_display")
         self.horizontalLayout.addWidget(self.label_text_select_table_display)
         self.comboBox_select_table_view = QtWidgets.QComboBox(self.widget_table_view_mode)
