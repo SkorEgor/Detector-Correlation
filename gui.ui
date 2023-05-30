@@ -212,11 +212,8 @@ QTableWidget {
 QTableWidget::item:selected{
 	background-color: rgb(72, 81, 94);
 }
+QHeaderView { qproperty-defaultAlignment: AlignCenter; }
 /*Цвет верхнего и левого поля*/
-QHeaderView { 
-qproperty-defaultAlignment: AlignCenter;
-
- }
 QHeaderView::section{
 	background-color:rgb(37, 41, 48);
     border-style: none;
@@ -3517,7 +3514,7 @@ background-image: url(:/update/resource/update/update2_white_18dp.svg);
            </property>
            <layout class="QVBoxLayout" name="layout_menu_bottom">
             <property name="spacing">
-             <number>0</number>
+             <number>2</number>
             </property>
             <property name="leftMargin">
              <number>0</number>

@@ -193,11 +193,8 @@ class Ui_Dialog(object):
 "QTableWidget::item:selected{\n"
 "    background-color: rgb(72, 81, 94);\n"
 "}\n"
+"QHeaderView { qproperty-defaultAlignment: AlignCenter; }\n"
 "/*Цвет верхнего и левого поля*/\n"
-"QHeaderView { \n"
-"qproperty-defaultAlignment: AlignCenter;\n"
-"\n"
-" }\n"
 "QHeaderView::section{\n"
 "    background-color:rgb(37, 41, 48);\n"
 "    border-style: none;\n"
@@ -1493,7 +1490,7 @@ class Ui_Dialog(object):
         self.widget_menu_bottom.setObjectName("widget_menu_bottom")
         self.layout_menu_bottom = QtWidgets.QVBoxLayout(self.widget_menu_bottom)
         self.layout_menu_bottom.setContentsMargins(0, 5, 0, 0)
-        self.layout_menu_bottom.setSpacing(0)
+        self.layout_menu_bottom.setSpacing(2)
         self.layout_menu_bottom.setObjectName("layout_menu_bottom")
         self.pushButton_close_open_table = QtWidgets.QPushButton(self.widget_menu_bottom)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
