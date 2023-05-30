@@ -250,7 +250,7 @@ class GuiProgram(Ui_Dialog):
         # Таблица
         self.initialize_table()  # Инициализация пустой таблицы с заголовками
         self.pushButton_save_table_to_file.clicked.connect(self.saving_data)  # Сохранить данные из таблицы в файл
-        self.tableWidget_frequency_absorption.cellClicked.connect(self.get_clicked_cell)  # Выбрана строка таблицы
+        self.tableWidget_frequency_absorption.cellClicked.connect(self.get_clicked_cell)  # Выбрана строка таблицы zoom
         self.comboBox_select_table_view.currentIndexChanged.connect(self.table)
         self.lineEdit_window_width.textEdited.connect(
             lambda: self.check_window_width(False))  # Обновился текст ширины окна просмотра

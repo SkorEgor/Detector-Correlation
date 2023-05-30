@@ -25,6 +25,7 @@ class DataAndProcessing:
         ]
         self.names_processing = [
             "correlate",  # Корреляция
+            "correlation_under_threshold",  # Корреляция меньше порога
             "smoothed_without_gas",  # Сглаженный сигнал без шума
             "sigma",  # Сигма
             "sigma_with_multiplier",  # Сигма с множителем
@@ -81,6 +82,10 @@ class DataAndProcessing:
         self.correlate(correlation_window_width)
         # Значение порога корреляции
         self.correlation_threshold = correlation_threshold
+        # Участки ниже порога. Расширение участков корреляции, с учетом тренда
+        self.correlation_extension()
+        # Интервалы линий поглощение после корреляции (логический массив)
+        self.find_intervals_after_correlation()
 
         # (2.1) СГЛАЖИВАНИЕ -> СИГМА
         # Сглаживание
@@ -97,7 +102,6 @@ class DataAndProcessing:
         self.width_filter(erosion, dilation)
 
         # Находим
-        self.find_intervals_after_correlation()  # Интервалы линий поглощение после корреляции
         self.find_point_after_correlation()  # Точки линий поглощения, от корреляции
         self.find_intervals_after_processing()  # Находит точки прошедшие фильтрацию сигмой и шириной участка
 
@@ -126,6 +130,39 @@ class DataAndProcessing:
                          index=[self.data["frequency"][data_frequency_star],
                                 self.data["frequency"][data_frequency_end]])
 
+    # ОБРАТОКА (1.2): Участки ниже порога. Расширение участков корреляции, с учетом тренда
+    def correlation_extension(self):
+        # Массив истинных значений порога
+        self.data["correlation_under_threshold"] = self.data["correlate"] <= self.correlation_threshold
+        # Массив только истинных значений
+        bool_samples = self.data["with_gas"][
+            self.data["correlation_under_threshold"]]
+
+        # Группируем интервалы -> находим смещение максимума -> в сторону смещения расширяем
+        bool_samples.groupby((bool_samples.index != bool_samples.index.to_series().shift() + 1)
+                             .cumsum()).apply(lambda grp: self.offset_direction(grp))
+
+    # ОБРАТОКА (1.2.1): Функция на участке группы.
+    # Находит смещение максимума -> в сторону смещения расширяем
+    def offset_direction(self, mass):
+        # Находим индекс максимума
+        index_max = mass.idxmax()
+        # Кол-во индексов
+        len_index = mass.index[-1] - mass.index[0]
+        # Индекс середины
+        middle_index = mass.index[0] + len_index // 2
+
+        # Максимум правее
+        if index_max > middle_index:
+            # В исходном массиве, значения справа -True
+            self.data.loc[
+            mass.index[-1]:mass.index[-1] + len_index,
+            ["correlation_under_threshold"]] = True
+        else:
+            self.data.loc[
+            mass.index[0] - len_index:mass.index[0]:,
+            ["correlation_under_threshold"]] = True
+
     # ОБРАБОТКА (2): Шум
     # (2.1): Сглаживание данных без вещества
     def smoothing_data_without_gas(self, window_width):
@@ -146,12 +183,12 @@ class DataAndProcessing:
         self.data["sigma"] = (self.data["smoothed_without_gas"] - self.data["without_gas"]) \
             .rolling(window_width, center=True).std()
 
-    # (2.3) Разница данных с газом и без (положительная часть)
+    # (2.3) Разница данных с газом и без
     def difference_empty_and_signal(self):
         self.data["difference"] = (self.data["with_gas"] - self.data["without_gas"])  # .clip(lower=0)
         # Порог для корреляции задан -> Разница на участках меньше корреляции
         if not (self.correlation_threshold is None):
-            self.data["difference"] = self.data["difference"] * (self.data["correlate"] < self.correlation_threshold)
+            self.data["difference"] = self.data["difference"] * (self.data["correlation_under_threshold"])
 
     # (2.4) Домноженная сигма
     def multiply_sigma(self, sigma_multiplier):
@@ -225,9 +262,9 @@ class DataAndProcessing:
         if self.correlation_threshold is None:
             return
 
-        # Все что выше порога, приобретает значение корреляции
+        # Все что выше порога, приобретает значение данных с веществом
         self.data.loc[
-            self.data["correlate"] <= self.correlation_threshold, "intervals_after_correlation"] = self.data["with_gas"]
+            self.data["correlation_under_threshold"], "intervals_after_correlation"] = self.data["with_gas"]
 
     # (2) Точки линий поглощения, от корреляции (строчки: индекс и гамма)
     def find_point_after_correlation(self):
