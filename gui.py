@@ -2341,6 +2341,7 @@ class Ui_Dialog(object):
         self.tableWidget_frequency_absorption.setStyleSheet("")
         self.tableWidget_frequency_absorption.setFrameShape(QtWidgets.QFrame.NoFrame)
         self.tableWidget_frequency_absorption.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.tableWidget_frequency_absorption.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustToContents)
         self.tableWidget_frequency_absorption.setEditTriggers(QtWidgets.QAbstractItemView.AnyKeyPressed|QtWidgets.QAbstractItemView.EditKeyPressed)
         self.tableWidget_frequency_absorption.setTabKeyNavigation(False)
         self.tableWidget_frequency_absorption.setProperty("showDropIndicator", False)

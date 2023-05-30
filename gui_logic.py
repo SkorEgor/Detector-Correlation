@@ -274,6 +274,7 @@ class GuiProgram(Ui_Dialog):
         self.tableWidget_frequency_absorption.setHorizontalHeaderLabels(["Частота МГц", "Гамма", ""])
         self.tableWidget_frequency_absorption.horizontalHeaderItem(0).setTextAlignment(Qt.AlignHCenter)
         self.tableWidget_frequency_absorption.horizontalHeaderItem(1).setTextAlignment(Qt.AlignHCenter)
+        self.tableWidget_frequency_absorption.resizeColumnsToContents()
 
     ######################################
     #           ПРОВЕРКИ ВВОДА
