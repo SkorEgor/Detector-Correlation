@@ -491,7 +491,7 @@ QCheckBox::indicator:checked {
                <property name="geometry">
                 <rect>
                  <x>0</x>
-                 <y>0</y>
+                 <y>-414</y>
                  <width>208</width>
                  <height>890</height>
                 </rect>
@@ -3157,7 +3157,7 @@ background-image: url(:/update/resource/update/update2_white_18dp.svg);
                             <string notr="true"/>
                            </property>
                            <property name="text">
-                            <string notr="true">1</string>
+                            <string notr="true">2</string>
                            </property>
                            <property name="maxLength">
                             <number>10</number>
@@ -3503,7 +3503,7 @@ background-image: url(:/update/resource/update/update2_white_18dp.svg);
            <property name="minimumSize">
             <size>
              <width>0</width>
-             <height>40</height>
+             <height>80</height>
             </size>
            </property>
            <property name="styleSheet">

@@ -635,7 +635,7 @@ class GuiProgram(Ui_Dialog):
             return
 
         # Задаем кол-во столбцов и строк
-        self.tableWidget_frequency_absorption.setColumnCount(3)  # Столбцы
+        self.tableWidget_frequency_absorption.setColumnCount(4)  # Столбцы
         # Строки
         number_rows = None
         # Фильтр Крест
@@ -692,7 +692,7 @@ class GuiProgram(Ui_Dialog):
             # значения частоты и гаммы для 0 и 1 столбца
             self.tableWidget_frequency_absorption.setItem(index, 0, QTableWidgetItem(str('%.3f' % f)))
             self.tableWidget_frequency_absorption.setItem(index, 1, QTableWidgetItem(str('%.7E' % g)))
-
+            self.tableWidget_frequency_absorption.setItem(index, 3, QTableWidgetItem(str(index_data)))
             # Элемент 2 столбца - checkbox, сохранения данных
             check_box = QtWidgets.QCheckBox()  # Создаем объект чекбокс
             if status:
@@ -715,6 +715,8 @@ class GuiProgram(Ui_Dialog):
             self.tableWidget_frequency_absorption.resizeColumnsToContents()
         else:
             self.tableWidget_frequency_absorption.resizeColumnToContents(2)
+        # Скрываем столбец и индексом данных
+        self.tableWidget_frequency_absorption.setColumnHidden(3, True)
         # Начальные данные для статистики
         # Всего строк
         # Альтернатива self.data_signals.point_absorption_after_correlation[
@@ -739,6 +741,7 @@ class GuiProgram(Ui_Dialog):
 
         # Если передали индекс, инвертируем состояние
         if index is not None:
+            print(index)
             self.data_signals.point_absorption_after_correlation.at[index, "status"] = \
                 not self.data_signals.point_absorption_after_correlation["status"][index]
 
@@ -769,6 +772,9 @@ class GuiProgram(Ui_Dialog):
         if not self.check_window_width(True):
             return
 
+        # Получаем индекс данных
+        index_data = int(self.tableWidget_frequency_absorption.item(row,3).text())
+
         # Запрашиваем ширину окна просмотра
         window_width = self.lineEdit_window_width.text()
         window_width = float(window_width)
@@ -777,7 +783,7 @@ class GuiProgram(Ui_Dialog):
 
         # Приближаем область с выделенной частотой
         # находим границы области
-        frequency_peak = self.data_signals.point_absorption_after_correlation["frequency"].iloc[row]
+        frequency_peak = self.data_signals.point_absorption_after_correlation["frequency"].loc[index_data]
 
         frequency_start = frequency_peak - frequency_left_or_right
         frequency_end = frequency_peak + frequency_left_or_right
@@ -791,7 +797,7 @@ class GuiProgram(Ui_Dialog):
             x_max=frequency_end,
             y_min=self.data_signals.data["with_gas"][
                 self.data_signals.data["frequency"].between(frequency_start, frequency_end)].min(),
-            y_max=self.data_signals.point_absorption_after_correlation["gamma"].iloc[row] * 1.2
+            y_max=self.data_signals.point_absorption_after_correlation["gamma"].loc[index_data] * 1.2
         )
 
     # Кнопка сохранения таблицы

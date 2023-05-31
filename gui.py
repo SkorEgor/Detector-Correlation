@@ -303,7 +303,7 @@ class Ui_Dialog(object):
         self.scrollArea_menu_body.setAlignment(QtCore.Qt.AlignCenter)
         self.scrollArea_menu_body.setObjectName("scrollArea_menu_body")
         self.scrollAreaWidgetContents = QtWidgets.QWidget()
-        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 208, 890))
+        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, -414, 208, 890))
         self.scrollAreaWidgetContents.setStyleSheet("")
         self.scrollAreaWidgetContents.setObjectName("scrollAreaWidgetContents")
         self.Layout_scroll_menu = QtWidgets.QVBoxLayout(self.scrollAreaWidgetContents)
@@ -1343,7 +1343,7 @@ class Ui_Dialog(object):
         font.setWeight(50)
         self.lineEdit_erosion.setFont(font)
         self.lineEdit_erosion.setStyleSheet("")
-        self.lineEdit_erosion.setText("1")
+        self.lineEdit_erosion.setText("2")
         self.lineEdit_erosion.setMaxLength(10)
         self.lineEdit_erosion.setAlignment(QtCore.Qt.AlignCenter)
         self.lineEdit_erosion.setDragEnabled(False)
@@ -1482,7 +1482,7 @@ class Ui_Dialog(object):
         self.layout_menu_body.addWidget(self.scrollArea_menu_body)
         self.layout_menu.addWidget(self.widget_menu_body)
         self.widget_menu_bottom = QtWidgets.QWidget(self.widget_menu)
-        self.widget_menu_bottom.setMinimumSize(QtCore.QSize(0, 40))
+        self.widget_menu_bottom.setMinimumSize(QtCore.QSize(0, 80))
         self.widget_menu_bottom.setStyleSheet("QWidget#widget_menu_bottom{\n"
 "    border: none;                                                /* без границ */\n"
 "    border-top:2px solid rgb(255, 255, 255);    /* С правой красной раницей */\n"
